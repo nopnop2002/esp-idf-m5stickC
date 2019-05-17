@@ -15,3 +15,6 @@ You can add your font file.
 The format of the font file is the FONTX format.   
 Your font file is put in font directory.   
 
+Please refer this page.   
+http://elm-chan.org/docs/dosv/fontx_e.html
+
