@@ -9,6 +9,7 @@ make menuconfig
 make flash
 ```
 
+\*There is no MENU ITEM where this application is peculiar.   
 
 # Font File   
 You can add your font file.   
