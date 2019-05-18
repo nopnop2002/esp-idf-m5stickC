@@ -333,11 +333,11 @@ TickType_t ColorTest(ST7735_t * dev, int width, int height) {
 	uint16_t color;
 	lcdFillScreen(dev, WHITE);
 	color = RED;
-	uint16_t delta = SCREEN_HEIGHT/16;
+	uint16_t delta = height/16;
 	uint16_t ypos = 0;
 	for(int i=0;i<16;i++) {
 		//ESP_LOGI(TAG, "color=0x%x",color);
-		lcdDrawFillRect(dev, 0, ypos, SCREEN_WIDTH, ypos+delta, color);
+		lcdDrawFillRect(dev, 0, ypos, width-1, ypos+delta, color);
 		color = color >> 1;
 		ypos = ypos + delta;
 	}
