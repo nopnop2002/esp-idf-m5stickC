@@ -16,7 +16,7 @@ make flash
 ---
 
 # Font File   
-You can add your font file.   
+You can add your original font file.   
 The format of the font file is the FONTX format.   
 Your font file is put in font directory.   
 Your font file is uploaded to SPIFFS partition using meke flash.   
