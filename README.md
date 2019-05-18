@@ -36,5 +36,5 @@ It's possible to text rotation.
 ![M5StickC-4](https://user-images.githubusercontent.com/6020549/57962130-ce79a780-794e-11e9-961a-e195eb42a723.JPG)
 
 It's possible to indicate more than one font at the same time.   
-![M5StickC-5](https://user-images.githubusercontent.com/6020549/57962134-d33e5b80-794e-11e9-95ff-649e00bb23e5.JPG)
+![M5StickC-5](https://user-images.githubusercontent.com/6020549/57962150-eea96680-794e-11e9-895f-26ec16ca24e8.JPG)
 
