@@ -38,7 +38,7 @@ InitFontx(yourFont,"/spiffs/your_font_file_name","");
 lcdDrawString(dev, yourFont, x, y, ascii, color);
 ```
 
-It's possible to text rotation.   
+It's possible to text rotation and invert.   
 ![M5StickC-6](https://user-images.githubusercontent.com/6020549/57962805-96766280-7956-11e9-92a8-8778e62b7ef5.JPG)
 
 ![M5StickC-7](https://user-images.githubusercontent.com/6020549/57962808-9b3b1680-7956-11e9-8f7d-487c17d43dbf.JPG)
