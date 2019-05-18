@@ -497,7 +497,7 @@ void app_main(void)
         ESP_LOGI(TAG,"Partition size: total: %d, used: %d", total, used);
     }
 
-    SPIFFS_Directory("/spiffs");
+//    SPIFFS_Directory("/spiffs");
 
 	// power on
 	i2c_master_init();
