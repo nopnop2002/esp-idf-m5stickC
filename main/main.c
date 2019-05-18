@@ -20,6 +20,7 @@
 #define	INTERVAL		100
 
 #define WAIT	vTaskDelay(INTERVAL)
+//If you want to continue by push button, enable thgis line.
 //#define WAIT	waitButton()
 
 static const char *TAG = "M5StickC";
@@ -102,7 +103,8 @@ TickType_t ArrowTest(ST7735_t * dev, FontxFile *fx, int width, int height) {
     //ESP_LOGI(TAG,"fontWidth=%d fontHeight=%d",fontWidth,fontHeight);
 
     uint16_t color;
-    lcdFillScreen(dev, WHITE);
+    //lcdFillScreen(dev, WHITE);
+    lcdFillScreen(dev, BLACK);
     lcdSetFontDirection(dev, 0);
     color = RED;
     uint8_t ascii[10];
@@ -143,7 +145,8 @@ TickType_t HorizontalTest(ST7735_t * dev, FontxFile *fx, int width, int height) 
 	//ESP_LOGI(TAG,"fontWidth=%d fontHeight=%d",fontWidth,fontHeight);
 
 	uint16_t color;
-	lcdFillScreen(dev, WHITE);
+	//lcdFillScreen(dev, WHITE);
+	lcdFillScreen(dev, BLACK);
     uint8_t ascii[20];
 	strcpy((char *)ascii, " M5StickC ");
 
@@ -193,7 +196,8 @@ TickType_t VerticalTest(ST7735_t * dev, FontxFile *fx, int width, int height) {
 	//ESP_LOGI(TAG,"fontWidth=%d fontHeight=%d",fontWidth,fontHeight);
 
 	uint16_t color;
-	lcdFillScreen(dev, WHITE);
+	//lcdFillScreen(dev, WHITE);
+	lcdFillScreen(dev, BLACK);
     uint8_t ascii[20];
 	strcpy((char *)ascii, " M5StickC ");
 
@@ -237,7 +241,8 @@ TickType_t LineTest(ST7735_t * dev, int width, int height) {
 	startTick = xTaskGetTickCount();
 
 	uint16_t color;
-	lcdFillScreen(dev, WHITE);
+	//lcdFillScreen(dev, WHITE);
+	lcdFillScreen(dev, BLACK);
 	color=RED;
 	for(int ypos=0;ypos<height;ypos=ypos+10) {
 		lcdDrawLine(dev, 0, ypos, width, ypos, color);
@@ -258,7 +263,8 @@ TickType_t CircleTest(ST7735_t * dev, int width, int height) {
 	startTick = xTaskGetTickCount();
 
 	uint16_t color;
-	lcdFillScreen(dev, WHITE);
+	//lcdFillScreen(dev, WHITE);
+	lcdFillScreen(dev, BLACK);
 	color = GRAY;
 	uint16_t xpos = width/2;
 	uint16_t ypos = height/2;
@@ -277,7 +283,8 @@ TickType_t RoundRectTest(ST7735_t * dev, int width, int height) {
 	startTick = xTaskGetTickCount();
 
     uint16_t color;
-    lcdFillScreen(dev, WHITE);
+    //lcdFillScreen(dev, WHITE);
+    lcdFillScreen(dev, BLACK);
     color = BLUE;
     for(int i=5;i<width;i=i+5) {
         if (i > (width-i-1) ) break;
@@ -351,12 +358,13 @@ void tft(void *pvParameters)
 	FontxFile fx24[2];
 	FontxFile fx32[2];
     InitFontx(fx16,"/spiffs/ILGH16XB.FNT",""); // 16Dot Gothic
-    //InitFontx(fx16,"/spiffs/ILMH16XB.FNT",""); // 16Dot Mincyo
     InitFontx(fx24,"/spiffs/ILGH24XB.FNT",""); // 24Dot Gothic
-    //InitFontx(fx24,"/spiffs/ILMH24XB.FNT",""); // 24Dot Mincyo
     InitFontx(fx32,"/spiffs/ILGH32XB.FNT",""); // 32Dot Gothic
+
+    //InitFontx(fx16,"/spiffs/ILMH16XB.FNT",""); // 16Dot Mincyo
+    //InitFontx(fx24,"/spiffs/ILMH24XB.FNT",""); // 24Dot Mincyo
     //InitFontx(fx32,"/spiffs/ILMH32XB.FNT",""); // 32Dot Mincyo
-	
+
 	ST7735_t dev;
 	spi_master_init(&dev);
 	lcdInit(&dev, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -402,8 +410,8 @@ void tft(void *pvParameters)
 		uint16_t color;
 		uint8_t ascii[20];
 		uint16_t xpos;
-		lcdFillScreen(&dev, WHITE);
-		color = BLACK;
+		lcdFillScreen(&dev, BLACK);
+		color = WHITE;
 		lcdSetFontDirection(&dev, 1);
 		xpos = SCREEN_WIDTH-16;
 		strcpy((char *)ascii, "16Dot Font");
