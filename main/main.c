@@ -18,10 +18,30 @@
 #define SCREEN_WIDTH	80
 #define SCREEN_HEIGHT	160
 #define	INTERVAL		100
-#define	BUTTON_GPIO		37
+
+#define WAIT	vTaskDelay(INTERVAL)
+//#define WAIT	waitButton()
 
 static const char *TAG = "M5StickC";
 
+
+// wait until button push
+static void waitButton() {
+	bool flag = true;
+	while(flag) {
+		int level = gpio_get_level(GPIO_NUM_37);
+		if (level == 0) {
+			ESP_LOGI(TAG, "Push Button");
+			flag = false;
+			while(1) {
+				level = gpio_get_level(GPIO_NUM_37);
+				if (level == 1) break;
+				vTaskDelay(1);
+			}
+		}
+		vTaskDelay(1);
+	}
+}
 
 static void SPIFFS_Directory(char * path) {
     DIR* dir = opendir(path);
@@ -345,43 +365,43 @@ void tft(void *pvParameters)
 		ESP_LOGI(TAG, "Mainloop Start");
 		AXP192_ScreenBreath(15);
 
-#if 1
 		FillTest(&dev, SCREEN_WIDTH, SCREEN_HEIGHT);
-		vTaskDelay(INTERVAL);
+		WAIT;
+		//vTaskDelay(INTERVAL);
 
 		ColorBarTest(&dev, SCREEN_WIDTH, SCREEN_HEIGHT);
-		vTaskDelay(INTERVAL);
+		WAIT;
+		//vTaskDelay(INTERVAL);
 
 		ArrowTest(&dev, fx16, SCREEN_WIDTH, SCREEN_HEIGHT);
-		vTaskDelay(INTERVAL);
+		WAIT;
+		//vTaskDelay(INTERVAL);
 
 		LineTest(&dev, SCREEN_WIDTH, SCREEN_HEIGHT);
-		vTaskDelay(INTERVAL);
+		WAIT;
 
 		CircleTest(&dev, SCREEN_WIDTH, SCREEN_HEIGHT);
-		vTaskDelay(INTERVAL);
+		WAIT;
 
 		RoundRectTest(&dev, SCREEN_WIDTH, SCREEN_HEIGHT);
-		vTaskDelay(INTERVAL);
+		WAIT;
 
 		HorizontalTest(&dev, fx16, SCREEN_WIDTH, SCREEN_HEIGHT);
-		vTaskDelay(INTERVAL);
+		WAIT;
 
 		VerticalTest(&dev, fx16, SCREEN_WIDTH, SCREEN_HEIGHT);
-		vTaskDelay(INTERVAL);
+		WAIT;
 
 		FillRectTest(&dev, SCREEN_WIDTH, SCREEN_HEIGHT);
-		vTaskDelay(INTERVAL);
+		WAIT;
 
 		ColorTest(&dev, SCREEN_WIDTH, SCREEN_HEIGHT);
-		vTaskDelay(INTERVAL);
-#endif
+		WAIT;
 
+		// Multi Font Test
 		uint16_t color;
 		uint8_t ascii[20];
 		uint16_t xpos;
-#if 1
-		// Multi Font Test
 		lcdFillScreen(&dev, WHITE);
 		color = BLACK;
 		lcdSetFontDirection(&dev, 1);
@@ -396,9 +416,9 @@ void tft(void *pvParameters)
 		xpos = xpos - 32;
 		strcpy((char *)ascii, "32Dot Font");
 		lcdDrawString(&dev, fx32, xpos, 0, ascii, color);
-		vTaskDelay(INTERVAL);
-#endif
+		WAIT;
 
+		// Brightness control
 		lcdFillScreen(&dev, WHITE);
 		color = BLACK;
 		lcdSetFontDirection(&dev, 1);
