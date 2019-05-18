@@ -4,7 +4,7 @@
 
 typedef struct {
 	const char *path;
-	char  fxname[32];
+	char  fxname[10];
 	bool  opened;
 	bool  valid;
 	bool  is_ank;
