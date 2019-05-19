@@ -353,17 +353,16 @@ TickType_t ColorTest(ST7735_t * dev, int width, int height) {
 void tft(void *pvParameters)
 {
 	// set font file
-	SPIFFS_Directory("/spiffs/");
 	FontxFile fx16[2];
 	FontxFile fx24[2];
 	FontxFile fx32[2];
-    InitFontx(fx16,"/spiffs/ILGH16XB.FNT",""); // 16Dot Gothic
-    InitFontx(fx24,"/spiffs/ILGH24XB.FNT",""); // 24Dot Gothic
-    InitFontx(fx32,"/spiffs/ILGH32XB.FNT",""); // 32Dot Gothic
+    InitFontx(fx16,"/spiffs/ILGH16XB.FNT",""); // 8x16Dot Gothic
+    InitFontx(fx24,"/spiffs/ILGH24XB.FNT",""); // 12x24Dot Gothic
+    InitFontx(fx32,"/spiffs/ILGH32XB.FNT",""); // 16x32Dot Gothic
 
-    //InitFontx(fx16,"/spiffs/ILMH16XB.FNT",""); // 16Dot Mincyo
-    //InitFontx(fx24,"/spiffs/ILMH24XB.FNT",""); // 24Dot Mincyo
-    //InitFontx(fx32,"/spiffs/ILMH32XB.FNT",""); // 32Dot Mincyo
+    //InitFontx(fx16,"/spiffs/ILMH16XB.FNT",""); // 8x16Dot Mincyo
+    //InitFontx(fx24,"/spiffs/ILMH24XB.FNT",""); // 12x24Dot Mincyo
+    //InitFontx(fx32,"/spiffs/ILMH32XB.FNT",""); // 16x32Dot Mincyo
 
 	ST7735_t dev;
 	spi_master_init(&dev);
@@ -497,7 +496,7 @@ void app_main(void)
         ESP_LOGI(TAG,"Partition size: total: %d, used: %d", total, used);
     }
 
-//    SPIFFS_Directory("/spiffs");
+    SPIFFS_Directory("/spiffs");
 
 	// power on
 	i2c_master_init();
