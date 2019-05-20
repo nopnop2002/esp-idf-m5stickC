@@ -77,13 +77,13 @@ TickType_t ColorBarTest(ST7735_t * dev, int width, int height) {
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
 
-	uint16_t Y1,Y2;
-	Y1 = height/3;
-	Y2 = (height/3)*2;
-    //ESP_LOGI(TAG, "Y1=%d Y2=%d",Y1,Y2);
-	lcdDrawFillRect(dev, 0, 0, width, Y1, RED);
-	lcdDrawFillRect(dev, 0, Y1, width, Y2, GREEN);
-	lcdDrawFillRect(dev, 0, Y2, width, height, BLUE);
+	uint16_t y1,y2;
+	y1 = height/3;
+	y2 = (height/3)*2;
+    //ESP_LOGI(TAG, "y1=%d y2=%d",y1,y2);
+	lcdDrawFillRect(dev, 0, 0, width-1, y1-1, RED);
+	lcdDrawFillRect(dev, 0, y1-1, width-1, y2-1, GREEN);
+	lcdDrawFillRect(dev, 0, y2-1, width-1, height-1, BLUE);
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
