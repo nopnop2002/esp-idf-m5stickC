@@ -35,6 +35,8 @@ http://elm-chan.org/docs/dosv/fontx_e.html
 ```
 FontxFile yourFont[2];
 InitFontx(yourFont,"/spiffs/your_font_file_name","");
+uint8_t ascii[10];
+strcpy((char *)ascii, "MyFont");
 lcdDrawString(dev, yourFont, x, y, ascii, color);
 ```
 
