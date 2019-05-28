@@ -123,7 +123,7 @@ bool spi_master_write_data_word(ST7735_t * dev, uint16_t data, int flag)
 	uint8_t Byte[2];
 	Byte[0] = (data >> 8) & 0xFF;
 	Byte[1] = data & 0xFF;
-    if (flag) printf("spi_master_write_data_word Byte=%02x %02x\n",Byte[0],Byte[1]);
+	if (flag) printf("spi_master_write_data_word Byte=%02x %02x\n",Byte[0],Byte[1]);
 	gpio_set_level( dev->_dc, SPI_Data_Mode );
 	return spi_master_write_byte( dev->_SPIHandle, Byte, 2);
 }
@@ -875,7 +875,7 @@ void lcdSetFontUnderLine(ST7735_t * dev, uint16_t color) {
 	dev->_font_underline_color = color;
 }
 
-// UnSet font filling
+// UnSet font underline
 void lcdUnsetFontUnderLine(ST7735_t * dev) {
 	dev->_font_underline = false;
 }
