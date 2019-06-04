@@ -15,7 +15,7 @@
 
 void i2c_master_init()
 {
-    esp_err_t ret;
+	esp_err_t ret;
 
 	i2c_config_t i2c_config = {
 		.mode = I2C_MODE_MASTER,
@@ -26,9 +26,9 @@ void i2c_master_init()
 		.master.clk_speed = 1000000
 	};
 	ret = i2c_param_config(I2C_NUM_0, &i2c_config);
-    assert(ret==ESP_OK);
+	assert(ret==ESP_OK);
 	ret = i2c_driver_install(I2C_NUM_0, I2C_MODE_MASTER, 0, 0, 0);
-    assert(ret==ESP_OK);
+	assert(ret==ESP_OK);
 }
 
 void i2c_write(uint8_t reg, uint8_t data) {
@@ -69,22 +69,22 @@ void AXP192_ScreenBreath(uint8_t brightness) {
 	i2c_write(0x28, ((brightness & 0x0f) << 4));
 }
 
-// Enable Coulombcounter
+// Enable Coulomb Counter
 void AXP192_EnableCoulombcounter() {
 	i2c_write(0xB8, 0x80);
 }
 
-// Disable Coulombcounter
+// Disable Coulomb Counter
 void AXP192_DisableCoulombcounter() {
 	i2c_write(0xB8, 0x00);
 }
 
-// Stop Coulombcounter
+// Stop Coulomb Counter
 void AXP192_StopCoulombcounter() {
 	i2c_write(0xB8, 0xC0);
 }
 
-// Clear Coulombcounter
+// Clear Coulomb Counter
 void AXP192_ClearCoulombcounter() {
 	i2c_write(0xB8, 0xA0);
 }

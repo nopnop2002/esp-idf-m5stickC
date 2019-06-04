@@ -21,7 +21,7 @@
 
 #define WAIT	vTaskDelay(INTERVAL)
 
-//If you want to continue by push button, enable thgis line.
+//If you want to continue by push button, enable this line.
 //#define WAIT	waitButton()
 
 static const char *TAG = "M5StickC";
