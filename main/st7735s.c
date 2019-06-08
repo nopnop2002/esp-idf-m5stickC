@@ -22,8 +22,8 @@
 
 static const int SPI_Command_Mode = 0;
 static const int SPI_Data_Mode = 1;
-static const int SPI_Frequency = SPI_MASTER_FREQ_10M;
-//static const int SPI_Frequency = SPI_MASTER_FREQ_20M;
+//static const int SPI_Frequency = SPI_MASTER_FREQ_10M;
+static const int SPI_Frequency = SPI_MASTER_FREQ_20M;
 //static const int SPI_Frequency = SPI_MASTER_FREQ_26M;
 //static const int SPI_Frequency = SPI_MASTER_FREQ_40M;
 //static const int SPI_Frequency = SPI_MASTER_FREQ_80M;
@@ -55,14 +55,6 @@ void spi_master_init(ST7735_t * dev)
 	ret = spi_bus_initialize( HSPI_HOST, &buscfg, 1 );
 	ESP_LOGD(TAG, "spi_bus_initialize=%d",ret);
 	assert(ret==ESP_OK);
-
-#if 0
-	spi_device_interface_config_t devcfg;
-	memset( &devcfg, 0, sizeof( spi_device_interface_config_t ) );
-	devcfg.clock_speed_hz = frequency;
-	devcfg.spics_io_num = GPIO_CS;
-	devcfg.queue_size = 1;
-#endif
 
 	spi_device_interface_config_t devcfg={
 		.clock_speed_hz = SPI_Frequency,
@@ -126,6 +118,29 @@ bool spi_master_write_data_word(ST7735_t * dev, uint16_t data, int flag)
 	if (flag) printf("spi_master_write_data_word Byte=%02x %02x\n",Byte[0],Byte[1]);
 	gpio_set_level( dev->_dc, SPI_Data_Mode );
 	return spi_master_write_byte( dev->_SPIHandle, Byte, 2);
+}
+
+bool spi_master_write_addr(ST7735_t * dev, uint16_t addr1, uint16_t addr2)
+{
+        static uint8_t Byte[4];
+        Byte[0] = (addr1 >> 8) & 0xFF;
+        Byte[1] = addr1 & 0xFF;
+        Byte[2] = (addr2 >> 8) & 0xFF;
+        Byte[3] = addr2 & 0xFF;
+        gpio_set_level( dev->_dc, SPI_Data_Mode );
+        return spi_master_write_byte( dev->_SPIHandle, Byte, 4);
+}
+
+bool spi_master_write_color(ST7735_t * dev, uint16_t color, uint16_t size)
+{
+        static uint8_t Byte[1024];
+        int index = 0;
+        for(int i=0;i<size;i++) {
+                Byte[index++] = (color >> 8) & 0xFF;
+                Byte[index++] = color & 0xFF;
+        }
+        gpio_set_level( dev->_dc, SPI_Data_Mode );
+        return spi_master_write_byte( dev->_SPIHandle, Byte, size*2);
 }
 
 void delayMS(int ms) {
@@ -271,11 +286,9 @@ void lcdDrawPixel(ST7735_t * dev, uint16_t x, uint16_t y, uint16_t color){
 	uint16_t _x = x + COLSTART;
 	uint16_t _y = y + ROWSTART;
 	spi_master_write_command(dev, 0x2A);	// set column(x) address
-	spi_master_write_data_word(dev, _x, 0);
-	spi_master_write_data_word(dev, _x, 0);
+	spi_master_write_addr(dev, _x, _x);
 	spi_master_write_command(dev, 0x2B);	// set Page(y) address
-	spi_master_write_data_word(dev, _y, 0);
-	spi_master_write_data_word(dev, _y, 0);
+	spi_master_write_addr(dev, _y, _y);
 	spi_master_write_command(dev, 0x2C);	//  Memory Write
 	spi_master_write_data_word(dev, color, 0);
 }
@@ -287,7 +300,6 @@ void lcdDrawPixel(ST7735_t * dev, uint16_t x, uint16_t y, uint16_t color){
 // y2:End Y coordinate
 // color:color
 void lcdDrawFillRect(ST7735_t * dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color) {
-	int i,j; 
 	if (x1 >= dev->_width) return;
 	if (x2 >= dev->_width) x2=dev->_width-1;
 	if (y1 >= dev->_height) return;
@@ -298,18 +310,14 @@ void lcdDrawFillRect(ST7735_t * dev, uint16_t x1, uint16_t y1, uint16_t x2, uint
 	uint16_t _y1 = y1 + ROWSTART;
 	uint16_t _y2 = y2 + ROWSTART;
 	spi_master_write_command(dev, 0x2A);	// set column(x) address
-	spi_master_write_data_word(dev, _x1, 0);
-	spi_master_write_data_word(dev, _x2, 0);
+	spi_master_write_addr(dev, _x1, _x2);
 	spi_master_write_command(dev, 0x2B);	// set Page(y) address
-	spi_master_write_data_word(dev, _y1, 0);
-	spi_master_write_data_word(dev, _y2, 0);
+	spi_master_write_addr(dev, _y1, _y2);
 	spi_master_write_command(dev, 0x2C);	//  Memory Write
 
-	for(i=x1;i<=x2;i++){
-		for(j=y1;j<=y2;j++){
-			//ESP_LOGI(TAG,"i=%d j=%d",i,j);
-			spi_master_write_data_word(dev, color, 0);
-		}
+	for(int i=_x1;i<=_x2;i++){
+		uint16_t size = _y2-_y1+1;
+		spi_master_write_color(dev, color, size);
 	}
 }
 
@@ -594,6 +602,10 @@ int lcdDrawChar(ST7735_t * dev, FontxFile *fxs, uint16_t x, uint16_t y, uint8_t 
 	uint16_t yss = 0;
 	uint16_t xsd = 0;
 	uint16_t ysd = 0;
+	uint16_t x0  = 0;
+	uint16_t x1  = 0;
+	uint16_t y0  = 0;
+	uint16_t y1  = 0;
 	int next = 0;
 	if (dev->_font_direction == 0) {
 		xd1 = +1;
@@ -601,20 +613,30 @@ int lcdDrawChar(ST7735_t * dev, FontxFile *fxs, uint16_t x, uint16_t y, uint8_t 
 		xd2 =  0;
 		yd2 =  0;
 		xss =  x;
-		yss =  y; //yss =  y + ph - 1;
+		yss =  y - (ph - 1); //yss =  y + ph - 1;
 		xsd =  1;
 		ysd =  0;
 		next = x + pw;
+
+		x0  = x;
+		y0  = y - (ph-1);
+		x1  = x + (pw-1);
+		y1  = y;
 	} else if (dev->_font_direction == 2) {
 		xd1 = -1;
 		yd1 = -1; //yd1 = +1;
 		xd2 =  0;
 		yd2 =  0;
 		xss =  x;
-		yss =  y + ph - 1; //yss =  y - ph + 1;
+		yss =  y + ph + 1; //yss =  y - ph + 1;
 		xsd =  1;
 		ysd =  0;
 		next = x - pw;
+
+		x0  = x - (pw-1);
+		y0  = y;
+		x1  = x;
+		y1  = y + (ph-1);
 	} else if (dev->_font_direction == 1) {
 		xd1 =  0;
 		yd1 =  0;
@@ -625,6 +647,11 @@ int lcdDrawChar(ST7735_t * dev, FontxFile *fxs, uint16_t x, uint16_t y, uint8_t 
 		xsd =  0;
 		ysd =  1;
 		next = y + pw; //next = y - pw;
+
+		x0  = x;
+		y0  = y;
+		x1  = x + (ph-1);
+		y1  = y + (pw-1);
 	} else if (dev->_font_direction == 3) {
 		xd1 =  0;
 		yd1 =  0;
@@ -635,7 +662,14 @@ int lcdDrawChar(ST7735_t * dev, FontxFile *fxs, uint16_t x, uint16_t y, uint8_t 
 		xsd =  0;
 		ysd =  1;
 		next = y - pw; //next = y + pw;
+
+		x0  = x - (ph-1);
+		y0  = y - (pw-1);
+		x1  = x;
+		y1  = y;
 	}
+
+	if (dev->_font_fill) lcdDrawFillRect(dev, x0, y0, x1, y1, dev->_font_fill_color);
 
 	int bits;
 	if(_DEBUG_)printf("xss=%d yss=%d\n",xss,yss);
@@ -656,7 +690,7 @@ int lcdDrawChar(ST7735_t * dev, FontxFile *fxs, uint16_t x, uint16_t y, uint8_t 
 				if (fonts[ofs] & mask) {
 					lcdDrawPixel(dev, xx, yy, color);
 				} else {
-					if (dev->_font_fill) lcdDrawPixel(dev, xx, yy, dev->_font_fill_color);
+					//if (dev->_font_fill) lcdDrawPixel(dev, xx, yy, dev->_font_fill_color);
 				}
 				if (h == (ph-2) && dev->_font_underline)
 					lcdDrawPixel(dev, xx, yy, dev->_font_underline_color);

@@ -62,11 +62,11 @@ TickType_t FillTest(ST7735_t * dev, int width, int height) {
 	startTick = xTaskGetTickCount();
 
 	lcdFillScreen(dev, RED);
-	vTaskDelay(1);
+	vTaskDelay(50);
 	lcdFillScreen(dev, GREEN);
-	vTaskDelay(1);
+	vTaskDelay(50);
 	lcdFillScreen(dev, BLUE);
-	vTaskDelay(1);
+	vTaskDelay(50);
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
@@ -111,22 +111,22 @@ TickType_t ArrowTest(ST7735_t * dev, FontxFile *fx, int width, int height) {
 	uint8_t ascii[10];
 	lcdDrawArrow(dev, 10, 10, 0, 0, 5, color);
 	strcpy((char *)ascii, "0,0");
-	lcdDrawString(dev, fx, 0, 20, ascii, color);
+	lcdDrawString(dev, fx, 0, 30, ascii, color);
 
 	color = GREEN;
 	lcdDrawArrow(dev, 69, 10, 79, 0, 5, color);
 	strcpy((char *)ascii, "79,0");
-	lcdDrawString(dev, fx, 45, 20, ascii, color);
+	lcdDrawString(dev, fx, 45, 30, ascii, color);
 
 	color = GRAY;
 	lcdDrawArrow(dev, 10, 149, 0, 159, 5, color);
 	strcpy((char *)ascii, "0,159");
-	lcdDrawString(dev, fx, 0, 130, ascii, color);
+	lcdDrawString(dev, fx, 0, 140, ascii, color);
 
 	color = BLUE;
 	lcdDrawArrow(dev, 69, 149, 79, 159, 5, color);
 	strcpy((char *)ascii, "79,159");
-	lcdDrawString(dev, fx, 30, 130-fontHeight, ascii, color);
+	lcdDrawString(dev, fx, 30, 140-fontHeight, ascii, color);
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
@@ -153,29 +153,29 @@ TickType_t HorizontalTest(ST7735_t * dev, FontxFile *fx, int width, int height) 
 
 	color = RED;
 	lcdSetFontDirection(dev, 0);
-	lcdDrawString(dev, fx, 0, 0, ascii, color);
+	lcdDrawString(dev, fx, 0, fontHeight*1-1, ascii, color);
 	lcdSetFontUnderLine(dev, RED);
-	lcdDrawString(dev, fx, 0, 0+(fontHeight*1), ascii, color);
+	lcdDrawString(dev, fx, 0, fontHeight*2-1, ascii, color);
 	lcdUnsetFontUnderLine(dev);
 
 	lcdSetFontFill(dev, GREEN);
-	lcdDrawString(dev, fx, 0, 0+(fontHeight*2), ascii, color);
+	lcdDrawString(dev, fx, 0, fontHeight*3-1, ascii, color);
 	lcdSetFontUnderLine(dev, RED);
-	lcdDrawString(dev, fx, 0, 0+(fontHeight*3), ascii, color);
+	lcdDrawString(dev, fx, 0, fontHeight*4-1, ascii, color);
 	lcdUnsetFontFill(dev);
 	lcdUnsetFontUnderLine(dev);
 
 	color = BLUE;
 	lcdSetFontDirection(dev, 2);
-	lcdDrawString(dev, fx, width, height-(fontHeight*1), ascii, color);
+	lcdDrawString(dev, fx, width-1, height-(fontHeight*1)-1, ascii, color);
 	lcdSetFontUnderLine(dev, BLUE);
-	lcdDrawString(dev, fx, width, height-(fontHeight*2), ascii, color);
+	lcdDrawString(dev, fx, width-1, height-(fontHeight*2)-1, ascii, color);
 	lcdUnsetFontUnderLine(dev);
 
 	lcdSetFontFill(dev, YELLOW);
-	lcdDrawString(dev, fx, width, height-(fontHeight*3), ascii, color);
+	lcdDrawString(dev, fx, width-1, height-(fontHeight*3)-1, ascii, color);
 	lcdSetFontUnderLine(dev, BLUE);
-	lcdDrawString(dev, fx, width, height-(fontHeight*4), ascii, color);
+	lcdDrawString(dev, fx, width-1, height-(fontHeight*4)-1, ascii, color);
 	lcdUnsetFontFill(dev);
 	lcdUnsetFontUnderLine(dev);
 
@@ -218,15 +218,15 @@ TickType_t VerticalTest(ST7735_t * dev, FontxFile *fx, int width, int height) {
 
 	color = BLUE;
 	lcdSetFontDirection(dev, 3);
-	lcdDrawString(dev, fx, (fontHeight*1)-1, height, ascii, color);
+	lcdDrawString(dev, fx, (fontHeight*1)-1, height-1, ascii, color);
 	lcdSetFontUnderLine(dev, BLUE);
-	lcdDrawString(dev, fx, (fontHeight*2)-1, height, ascii, color);
+	lcdDrawString(dev, fx, (fontHeight*2)-1, height-1, ascii, color);
 	lcdUnsetFontUnderLine(dev);
 
 	lcdSetFontFill(dev, YELLOW);
-	lcdDrawString(dev, fx, (fontHeight*3)-1, height, ascii, color);
+	lcdDrawString(dev, fx, (fontHeight*3)-1, height-1, ascii, color);
 	lcdSetFontUnderLine(dev, BLUE);
-	lcdDrawString(dev, fx, (fontHeight*4)-1, height, ascii, color);
+	lcdDrawString(dev, fx, (fontHeight*4)-1, height-1, ascii, color);
 	lcdUnsetFontFill(dev);
 	lcdUnsetFontUnderLine(dev);
 
@@ -368,6 +368,14 @@ void tft(void *pvParameters)
 	ST7735_t dev;
 	spi_master_init(&dev);
 	lcdInit(&dev, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+#if 0
+	//For TEST
+	while(1) {
+		ArrowTest(&dev, fx16, SCREEN_WIDTH, SCREEN_HEIGHT);
+		WAIT;
+	}
+#endif
 
 	while (1) {
 		ESP_LOGI(TAG, "Mainloop Start");
