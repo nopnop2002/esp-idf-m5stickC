@@ -101,7 +101,7 @@ TickType_t ArrowTest(ST7735_t * dev, FontxFile *fx, int width, int height) {
 	uint8_t fontWidth;
 	uint8_t fontHeight;
 	GetFontx(fx, 0, buffer, &fontWidth, &fontHeight);
-	//ESP_LOGI(TAG,"fontWidth=%d fontHeight=%d",fontWidth,fontHeight);
+	ESP_LOGD(TAG,"fontWidth=%d fontHeight=%d",fontWidth,fontHeight);
 
 	uint16_t color;
 	//lcdFillScreen(dev, WHITE);
@@ -143,7 +143,7 @@ TickType_t HorizontalTest(ST7735_t * dev, FontxFile *fx, int width, int height) 
 	uint8_t fontWidth;
 	uint8_t fontHeight;
 	GetFontx(fx, 0, buffer, &fontWidth, &fontHeight);
-	//ESP_LOGI(TAG,"fontWidth=%d fontHeight=%d",fontWidth,fontHeight);
+	ESP_LOGD(TAG,"fontWidth=%d fontHeight=%d",fontWidth,fontHeight);
 
 	uint16_t color;
 	//lcdFillScreen(dev, WHITE);
@@ -194,7 +194,7 @@ TickType_t VerticalTest(ST7735_t * dev, FontxFile *fx, int width, int height) {
 	uint8_t fontWidth;
 	uint8_t fontHeight;
 	GetFontx(fx, 0, buffer, &fontWidth, &fontHeight);
-	//ESP_LOGI(TAG,"fontWidth=%d fontHeight=%d",fontWidth,fontHeight);
+	ESP_LOGD(TAG,"fontWidth=%d fontHeight=%d",fontWidth,fontHeight);
 
 	uint16_t color;
 	//lcdFillScreen(dev, WHITE);
@@ -349,7 +349,78 @@ TickType_t ColorTest(ST7735_t * dev, int width, int height) {
 	return diffTick;
 }
 
+TickType_t ScrollTest(ST7735_t * dev, FontxFile *fx, int width, int height) {
+	TickType_t startTick, endTick, diffTick;
+	startTick = xTaskGetTickCount();
 
+	// get font width & height
+	uint8_t buffer[FontxGlyphBufSize];
+	uint8_t fontWidth;
+	uint8_t fontHeight;
+	GetFontx(fx, 0, buffer, &fontWidth, &fontHeight);
+	ESP_LOGD(TAG,"fontWidth=%d fontHeight=%d",fontWidth,fontHeight);
+
+	uint16_t color;
+	uint8_t ascii[30];
+
+	typedef struct {
+		bool enable;
+		uint16_t color;;
+		char line[30];
+	} SAVE_t;
+
+
+	int lines = (height - fontHeight) / fontHeight;
+	ESP_LOGD(TAG, "height=%d fontHeight=%d lines=%d", height, fontHeight, lines);
+	SAVE_t save[10];
+	for(int i=0;i<lines;i++) {
+		save[i].enable = false;
+	}
+
+	lcdSetFontDirection(dev, 0);
+	lcdFillScreen(dev, BLACK);
+
+	strcpy((char *)ascii, "Scroll");
+	lcdDrawString(dev, fx, 0, fontHeight-1, ascii, RED);
+
+	color = CYAN;
+	for(int i=0;i<20;i++) {
+		sprintf((char *)ascii, "Line %d", i);
+		int last = -1;
+		bool renew = false;
+		for(int j=(lines-1);j>=0;j--) {
+			if (save[j].enable == false) last = j;
+		}
+		if (last == -1) {
+			last = lines-1;
+			renew = true;
+			for(int j=0;j<lines-1;j++) {
+				save[j].enable = save[j+1].enable;
+				save[j].color = save[j+1].color;
+				strcpy(save[j].line, save[j+1].line);
+			}
+		}
+		save[last].enable = true;
+		save[last].color = color;
+		strcpy(save[last].line,  (char*)ascii);
+		
+		if (renew) {
+			for(int j=0;j<lines;j++) {
+				ESP_LOGD(TAG, "enable[%d]=%d",j, save[j].enable);
+				lcdDrawFillRect(dev, 0, fontHeight*(j+1)-1, width-1, fontHeight*(j+2)-1, BLACK);
+				lcdDrawString(dev, fx, 0, fontHeight*(j+2)-1, (uint8_t *)save[j].line, save[j].color);
+			}
+		} else {
+			lcdDrawString(dev, fx, 0, fontHeight*(last+2)-1, (uint8_t *)save[last].line, save[last].color);
+		}
+		vTaskDelay(25);
+	}
+
+	endTick = xTaskGetTickCount();
+	diffTick = endTick - startTick;
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_RATE_MS);
+	return diffTick;
+}
 
 void tft(void *pvParameters)
 {
@@ -372,6 +443,8 @@ void tft(void *pvParameters)
 #if 0
 	//For TEST
 	while(1) {
+		ScrollTest(&dev, fx16, SCREEN_WIDTH, SCREEN_HEIGHT);
+		WAIT;
 		ArrowTest(&dev, fx16, SCREEN_WIDTH, SCREEN_HEIGHT);
 		WAIT;
 	}
@@ -412,6 +485,9 @@ void tft(void *pvParameters)
 		WAIT;
 
 		ColorTest(&dev, SCREEN_WIDTH, SCREEN_HEIGHT);
+		WAIT;
+
+		ScrollTest(&dev, fx16, SCREEN_WIDTH, SCREEN_HEIGHT);
 		WAIT;
 
 		// Multi Font Test
