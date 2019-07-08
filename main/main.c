@@ -387,13 +387,13 @@ TickType_t ScrollTest(ST7735_t * dev, FontxFile *fx, int width, int height) {
 	for(int i=0;i<20;i++) {
 		sprintf((char *)ascii, "Line %d", i);
 		int last = -1;
-		bool renew = false;
+		bool redraw = false;
 		for(int j=(lines-1);j>=0;j--) {
 			if (save[j].enable == false) last = j;
 		}
 		if (last == -1) {
 			last = lines-1;
-			renew = true;
+			redraw = true;
 			for(int j=0;j<lines-1;j++) {
 				save[j].enable = save[j+1].enable;
 				save[j].color = save[j+1].color;
@@ -404,10 +404,11 @@ TickType_t ScrollTest(ST7735_t * dev, FontxFile *fx, int width, int height) {
 		save[last].color = color;
 		strcpy(save[last].line,  (char*)ascii);
 		
-		if (renew) {
+		if (redraw) {
+			//lcdDrawFillRect(dev, 0, fontHeight, width-1, height-1, BLACK);
 			for(int j=0;j<lines;j++) {
 				ESP_LOGD(TAG, "enable[%d]=%d",j, save[j].enable);
-				lcdDrawFillRect(dev, 0, fontHeight*(j+1)-1, width-1, fontHeight*(j+2)-1, BLACK);
+				lcdDrawFillRect(dev, 0, fontHeight*(j+1), width-1, fontHeight*(j+2)-1, BLACK);
 				lcdDrawString(dev, fx, 0, fontHeight*(j+2)-1, (uint8_t *)save[j].line, save[j].color);
 			}
 		} else {
