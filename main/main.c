@@ -17,7 +17,15 @@
 
 #define SCREEN_WIDTH	80
 #define SCREEN_HEIGHT	160
-#define	INTERVAL	100
+#define	OFFSET_X		26
+#define OFFSET_Y		1
+#define GPIO_MOSI   	15
+#define GPIO_SCLK   	13
+#define GPIO_CS     	5
+#define GPIO_DC     	23
+#define GPIO_RESET  	18
+
+#define	INTERVAL		100
 
 #define WAIT	vTaskDelay(INTERVAL)
 
@@ -438,8 +446,8 @@ void tft(void *pvParameters)
 	//InitFontx(fx32,"/spiffs/ILMH32XB.FNT",""); // 16x32Dot Mincyo
 
 	ST7735_t dev;
-	spi_master_init(&dev);
-	lcdInit(&dev, SCREEN_WIDTH, SCREEN_HEIGHT);
+	spi_master_init(&dev, GPIO_MOSI, GPIO_SCLK, GPIO_CS, GPIO_DC, GPIO_RESET);
+	lcdInit(&dev, SCREEN_WIDTH, SCREEN_HEIGHT, OFFSET_X, OFFSET_Y);
 
 #if 0
 	//For TEST
