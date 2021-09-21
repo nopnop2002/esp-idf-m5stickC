@@ -4,14 +4,19 @@ Example code for driving M5StickC ST7735S display using ESP-IDF's SPI driver.
 
 ![M5StickC-2](https://user-images.githubusercontent.com/6020549/57962798-88284680-7956-11e9-862d-365667c9941d.JPG)
 
+# How to build
+
 ```
 git clone https://github.com/nopnop2002/esp-idf-m5stickC
 cd esp-idf-m5stickC/
-make menuconfig
-make flash
+idf.py set-target esp32
+idf.py menuconfig
+idf.py flash -b 115200 monitor
 ```
 
 \*There is no MENU ITEM where this application is peculiar.   
+
+__You need to specify Baud rate for flashing.__   
 
 # Graphic support
 ![M5StickC-3](https://user-images.githubusercontent.com/6020549/57962800-8c546400-7956-11e9-876d-795b6fe6d9e6.JPG)
