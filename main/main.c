@@ -15,17 +15,17 @@
 #include "st7735s.h"
 #include "fontx.h"
 
-#define SCREEN_WIDTH	80
-#define SCREEN_HEIGHT	160
-#define	OFFSET_X		26
-#define OFFSET_Y		1
-#define GPIO_MOSI   	15
-#define GPIO_SCLK   	13
-#define GPIO_CS     	5
-#define GPIO_DC     	23
-#define GPIO_RESET  	18
+#define SCREEN_WIDTH 80
+#define SCREEN_HEIGHT 160
+#define OFFSET_X 26
+#define OFFSET_Y 1
+#define GPIO_MOSI 15
+#define GPIO_SCLK 13
+#define GPIO_CS 5
+#define GPIO_DC 23
+#define GPIO_RESET 18
 
-#define	INTERVAL		100
+#define	INTERVAL 100
 
 #define WAIT	vTaskDelay(INTERVAL)
 
@@ -78,7 +78,7 @@ TickType_t FillTest(ST7735_t * dev, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_RATE_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -96,7 +96,7 @@ TickType_t ColorBarTest(ST7735_t * dev, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_RATE_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -138,7 +138,7 @@ TickType_t ArrowTest(ST7735_t * dev, FontxFile *fx, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_RATE_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -189,7 +189,7 @@ TickType_t HorizontalTest(ST7735_t * dev, FontxFile *fx, int width, int height) 
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_RATE_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -240,7 +240,7 @@ TickType_t VerticalTest(ST7735_t * dev, FontxFile *fx, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_RATE_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -263,7 +263,7 @@ TickType_t LineTest(ST7735_t * dev, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_RATE_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -283,7 +283,7 @@ TickType_t CircleTest(ST7735_t * dev, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_RATE_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -303,7 +303,7 @@ TickType_t RoundRectTest(ST7735_t * dev, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_RATE_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -331,7 +331,7 @@ TickType_t FillRectTest(ST7735_t * dev, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_RATE_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -353,7 +353,7 @@ TickType_t ColorTest(ST7735_t * dev, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_RATE_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -427,7 +427,7 @@ TickType_t ScrollTest(ST7735_t * dev, FontxFile *fx, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_RATE_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -449,12 +449,12 @@ void tft(void *pvParameters)
 	spi_master_init(&dev, GPIO_MOSI, GPIO_SCLK, GPIO_CS, GPIO_DC, GPIO_RESET);
 	lcdInit(&dev, SCREEN_WIDTH, SCREEN_HEIGHT, OFFSET_X, OFFSET_Y);
 
-#if 0
+#if 1
 	//For TEST
 	while(1) {
-		ScrollTest(&dev, fx16, SCREEN_WIDTH, SCREEN_HEIGHT);
-		WAIT;
-		ArrowTest(&dev, fx16, SCREEN_WIDTH, SCREEN_HEIGHT);
+		AXP192_ScreenBreath(15);
+
+		FillTest(&dev, SCREEN_WIDTH, SCREEN_HEIGHT);
 		WAIT;
 	}
 #endif
@@ -597,7 +597,8 @@ void app_main(void)
 	AXP192_PowerOn();
 
 	// set the GPIO as a input
-	gpio_pad_select_gpio(GPIO_NUM_37);
+	//gpio_pad_select_gpio(GPIO_NUM_37);
+	gpio_reset_pin(GPIO_NUM_37);
 	gpio_set_direction(GPIO_NUM_37, GPIO_MODE_DEF_INPUT);
 
 	xTaskCreate(tft, "TFT", 4096, NULL, 2, NULL);

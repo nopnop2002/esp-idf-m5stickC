@@ -25,12 +25,15 @@ void spi_master_init(ST7735_t * dev, int16_t GPIO_MOSI, int16_t GPIO_SCLK, int16
 {
 	esp_err_t ret;
 
+	gpio_reset_pin( GPIO_CS );
 	gpio_set_direction( GPIO_CS, GPIO_MODE_OUTPUT );
 	gpio_set_level( GPIO_CS, 0 );
 
+	gpio_reset_pin( GPIO_DC );
 	gpio_set_direction( GPIO_DC, GPIO_MODE_OUTPUT );
 	gpio_set_level( GPIO_DC, 0 );
 
+	gpio_reset_pin( GPIO_RESET );
 	gpio_set_direction( GPIO_RESET, GPIO_MODE_OUTPUT );
 	gpio_set_level( GPIO_RESET, 0 );
 	vTaskDelay( pdMS_TO_TICKS( 100 ) );
@@ -303,6 +306,7 @@ void lcdDrawFillRect(ST7735_t * dev, uint16_t x1, uint16_t y1, uint16_t x2, uint
 	uint16_t _x2 = x2 + dev->_offsetx;
 	uint16_t _y1 = y1 + dev->_offsety;
 	uint16_t _y2 = y2 + dev->_offsety;
+
 	spi_master_write_command(dev, 0x2A);	// set column(x) address
 	spi_master_write_addr(dev, _x1, _x2);
 	spi_master_write_command(dev, 0x2B);	// set Page(y) address
