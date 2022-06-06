@@ -25,9 +25,9 @@
 #define GPIO_DC 23
 #define GPIO_RESET 18
 
-#define	INTERVAL 100
+#define INTERVAL 100
 
-#define WAIT	vTaskDelay(INTERVAL)
+#define WAIT vTaskDelay(INTERVAL)
 
 //If you want to continue by push button, enable this line.
 //#define WAIT	waitButton()
