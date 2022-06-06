@@ -449,7 +449,7 @@ void tft(void *pvParameters)
 	spi_master_init(&dev, GPIO_MOSI, GPIO_SCLK, GPIO_CS, GPIO_DC, GPIO_RESET);
 	lcdInit(&dev, SCREEN_WIDTH, SCREEN_HEIGHT, OFFSET_X, OFFSET_Y);
 
-#if 1
+#if 0
 	//For TEST
 	while(1) {
 		AXP192_ScreenBreath(15);
