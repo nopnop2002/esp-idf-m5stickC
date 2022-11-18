@@ -46,6 +46,7 @@ bool spi_master_write_color(ST7735_t * dev, uint16_t color, uint16_t size);
 void delayMS(int ms);
 void lcdInit(ST7735_t * dev, int width, int height, int offsetx, int offsety);
 void lcdDrawPixel(ST7735_t * dev, uint16_t x, uint16_t y, uint16_t color);
+void lcdDrawMultiPixels(ST7735_t * dev, uint16_t x, uint16_t y, uint16_t size, uint16_t * colors);
 void lcdDrawFillRect(ST7735_t * dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
 void lcdDisplayOff(ST7735_t * dev);
 void lcdDisplayOn(ST7735_t * dev);

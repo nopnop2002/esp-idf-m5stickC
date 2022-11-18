@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -14,7 +15,12 @@
 #include "axp192.h"
 #include "st7735s.h"
 #include "fontx.h"
+#include "bmpfile.h"
+#include "decode_jpeg.h"
+#include "decode_png.h"
+#include "pngle.h"
 
+// M5stickC stuff
 #define SCREEN_WIDTH 80
 #define SCREEN_HEIGHT 160
 #define OFFSET_X 26
@@ -25,16 +31,16 @@
 #define GPIO_DC 23
 #define GPIO_RESET 18
 
-#define INTERVAL 100
+#define INTERVAL 400
 
 #define WAIT vTaskDelay(INTERVAL)
 
 //If you want to continue by push button, enable this line.
-//#define WAIT	waitButton()
+//#define WAIT waitButton()
 
 static const char *TAG = "M5StickC";
 
-
+#if 0
 // wait until button push
 static void waitButton() {
 	bool flag = true;
@@ -52,6 +58,7 @@ static void waitButton() {
 		vTaskDelay(1);
 	}
 }
+#endif
 
 static void SPIFFS_Directory(char * path) {
 	DIR* dir = opendir(path);
@@ -78,7 +85,7 @@ TickType_t FillTest(ST7735_t * dev, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%"PRIu32,diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -96,7 +103,7 @@ TickType_t ColorBarTest(ST7735_t * dev, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%"PRIu32,diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -138,7 +145,7 @@ TickType_t ArrowTest(ST7735_t * dev, FontxFile *fx, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%"PRIu32,diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -189,7 +196,7 @@ TickType_t HorizontalTest(ST7735_t * dev, FontxFile *fx, int width, int height) 
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%"PRIu32,diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -240,7 +247,7 @@ TickType_t VerticalTest(ST7735_t * dev, FontxFile *fx, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%"PRIu32,diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -263,7 +270,7 @@ TickType_t LineTest(ST7735_t * dev, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%"PRIu32,diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -283,7 +290,7 @@ TickType_t CircleTest(ST7735_t * dev, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%"PRIu32,diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -303,7 +310,7 @@ TickType_t RoundRectTest(ST7735_t * dev, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%"PRIu32,diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -331,7 +338,7 @@ TickType_t FillRectTest(ST7735_t * dev, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%"PRIu32,diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -353,7 +360,337 @@ TickType_t ColorTest(ST7735_t * dev, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%"PRIu32,diffTick*portTICK_PERIOD_MS);
+	return diffTick;
+}
+
+TickType_t BMPTest(ST7735_t * dev, char * file, int width, int height) {
+	TickType_t startTick, endTick, diffTick;
+	startTick = xTaskGetTickCount();
+
+	lcdSetFontDirection(dev, 0);
+	lcdFillScreen(dev, BLACK);
+
+	// open requested file
+	esp_err_t ret;
+	FILE* fp = fopen(file, "rb");
+	if (fp == NULL) {
+		ESP_LOGW(__FUNCTION__, "File not found [%s]", file);
+		return 0;
+	}
+
+	// read bmp header
+	bmpfile_t *result = (bmpfile_t*)malloc(sizeof(bmpfile_t));
+	if (result == NULL) {
+		ESP_LOGE(__FUNCTION__, "malloc fail");
+		return 0;
+	}
+	ret = fread(result->header.magic, 1, 2, fp);
+	assert(ret == 2);
+	if (result->header.magic[0]!='B' || result->header.magic[1] != 'M') {
+		ESP_LOGW(__FUNCTION__, "File is not BMP");
+		free(result);
+		fclose(fp);
+		return 0;
+	}
+	ret = fread(&result->header.filesz, 4, 1 , fp);
+	assert(ret == 1);
+	ESP_LOGD(__FUNCTION__,"result->header.filesz=%"PRIu32, result->header.filesz);
+	ret = fread(&result->header.creator1, 2, 1, fp);
+	assert(ret == 1);
+	ret = fread(&result->header.creator2, 2, 1, fp);
+	assert(ret == 1);
+	ret = fread(&result->header.offset, 4, 1, fp);
+	assert(ret == 1);
+
+	// read dib header
+	ret = fread(&result->dib.header_sz, 4, 1, fp);
+	assert(ret == 1);
+	ret = fread(&result->dib.width, 4, 1, fp);
+	assert(ret == 1);
+	ret = fread(&result->dib.height, 4, 1, fp);
+	assert(ret == 1);
+	ret = fread(&result->dib.nplanes, 2, 1, fp);
+	assert(ret == 1);
+	ret = fread(&result->dib.depth, 2, 1, fp);
+	assert(ret == 1);
+	ret = fread(&result->dib.compress_type, 4, 1, fp);
+	assert(ret == 1);
+	ret = fread(&result->dib.bmp_bytesz, 4, 1, fp);
+	assert(ret == 1);
+	ret = fread(&result->dib.hres, 4, 1, fp);
+	assert(ret == 1);
+	ret = fread(&result->dib.vres, 4, 1, fp);
+	assert(ret == 1);
+	ret = fread(&result->dib.ncolors, 4, 1, fp);
+	assert(ret == 1);
+	ret = fread(&result->dib.nimpcolors, 4, 1, fp);
+	assert(ret == 1);
+
+	if((result->dib.depth == 24) && (result->dib.compress_type == 0)) {
+		// BMP rows are padded (if needed) to 4-byte boundary
+		uint32_t rowSize = (result->dib.width * 3 + 3) & ~3;
+		int w = result->dib.width;
+		int h = result->dib.height;
+		ESP_LOGD(__FUNCTION__,"w=%d h=%d", w, h);
+		int _x;
+		int _w;
+		int _cols;
+		int _cole;
+		if (width >= w) {
+			_x = (width - w) / 2;
+			_w = w;
+			_cols = 0;
+			_cole = w - 1;
+		} else {
+			_x = 0;
+			_w = width;
+			_cols = (w - width) / 2;
+			_cole = _cols + width - 1;
+		}
+		ESP_LOGD(__FUNCTION__,"_x=%d _w=%d _cols=%d _cole=%d",_x, _w, _cols, _cole);
+
+		int _y;
+		int _rows;
+		int _rowe;
+		if (height >= h) {
+			_y = (height - h) / 2;
+			_rows = 0;
+			_rowe = h -1;
+		} else {
+			_y = 0;
+			_rows = (h - height) / 2;
+			_rowe = _rows + height - 1;
+		}
+		ESP_LOGD(__FUNCTION__,"_y=%d _rows=%d _rowe=%d", _y, _rows, _rowe);
+
+#define BUFFPIXEL 20
+		uint8_t sdbuffer[3*BUFFPIXEL]; // pixel buffer (R+G+B per pixel)
+		uint16_t *colors = (uint16_t*)malloc(sizeof(uint16_t) * w);
+		if (colors == NULL) {
+			ESP_LOGE(__FUNCTION__, "malloc fail");
+			free(result);
+			fclose(fp);
+			return 0;
+		}
+
+		for (int row=0; row<h; row++) { // For each scanline...
+			if (row < _rows || row > _rowe) continue;
+			// Seek to start of scan line.	It might seem labor-
+			// intensive to be doing this on every line, but this
+			// method covers a lot of gritty details like cropping
+			// and scanline padding.  Also, the seek only takes
+			// place if the file position actually needs to change
+			// (avoids a lot of cluster math in SD library).
+			// Bitmap is stored bottom-to-top order (normal BMP)
+			int pos = result->header.offset + (h - 1 - row) * rowSize;
+			fseek(fp, pos, SEEK_SET);
+			int buffidx = sizeof(sdbuffer); // Force buffer reload
+
+			int index = 0;
+			for (int col=0; col<w; col++) { // For each pixel...
+				if (buffidx >= sizeof(sdbuffer)) { // Indeed
+					fread(sdbuffer, sizeof(sdbuffer), 1, fp);
+					buffidx = 0; // Set index to beginning
+				}
+				if (col < _cols || col > _cole) continue;
+				// Convert pixel from BMP to TFT format, push to display
+				uint8_t b = sdbuffer[buffidx++];
+				uint8_t g = sdbuffer[buffidx++];
+				uint8_t r = sdbuffer[buffidx++];
+				colors[index++] = rgb565_conv(r, g, b);
+			} // end for col
+			ESP_LOGD(__FUNCTION__,"lcdDrawMultiPixels _x=%d _y=%d row=%d",_x, _y, row);
+			//lcdDrawMultiPixels(dev, _x, row+_y, _w, colors);
+			lcdDrawMultiPixels(dev, _x, _y, _w, colors);
+			_y++;
+		} // end for row
+		free(colors);
+	} // end if
+	free(result);
+	fclose(fp);
+
+	endTick = xTaskGetTickCount();
+	diffTick = endTick - startTick;
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%"PRIu32,diffTick*portTICK_PERIOD_MS);
+	return diffTick;
+}
+
+TickType_t JPEGTest(ST7735_t * dev, char * file, int width, int height) {
+	TickType_t startTick, endTick, diffTick;
+	startTick = xTaskGetTickCount();
+
+	lcdSetFontDirection(dev, 0);
+	lcdFillScreen(dev, BLACK);
+
+	pixel_jpeg **pixels;
+	int imageWidth;
+	int imageHeight;
+	esp_err_t err = decode_jpeg(&pixels, file, width, height, &imageWidth, &imageHeight);
+	ESP_LOGI(__FUNCTION__, "decode_image err=%d imageWidth=%d imageHeight=%d", err, imageWidth, imageHeight);
+	if (err == ESP_OK) {
+		ESP_LOGD(__FUNCTION__, "imageWidth=%d imageHeight=%d", imageWidth, imageHeight);
+
+		uint16_t jpegWidth = width;
+		uint16_t offsetX = 0;
+		if (width > imageWidth) {
+			jpegWidth = imageWidth;
+			offsetX = (width - imageWidth) / 2;
+		}
+		ESP_LOGD(__FUNCTION__, "jpegWidth=%d offsetX=%d", jpegWidth, offsetX);
+
+		uint16_t jpegHeight = height;
+		uint16_t offsetY = 0;
+		if (height > imageHeight) {
+			jpegHeight = imageHeight;
+			offsetY = (height - imageHeight) / 2;
+		}
+		ESP_LOGD(__FUNCTION__, "jpegHeight=%d offsetY=%d", jpegHeight, offsetY);
+		uint16_t *colors = (uint16_t*)malloc(sizeof(uint16_t) * jpegWidth);
+		if (colors == NULL) {
+			ESP_LOGE(__FUNCTION__, "malloc fail");
+			release_image(&pixels, width, height);
+			return 0;
+		}
+
+#if 0
+		for(int y = 0; y < jpegHeight; y++){
+			for(int x = 0;x < jpegWidth; x++){
+				pixel_s pixel = pixels[y][x];
+				uint16_t color = rgb565_conv(pixel.red, pixel.green, pixel.blue);
+				lcdDrawPixel(dev, x+offsetX, y+offsetY, color);
+			}
+			vTaskDelay(1);
+		}
+#endif
+
+		for(int y = 0; y < jpegHeight; y++){
+			for(int x = 0;x < jpegWidth; x++){
+				//pixel_s pixel = pixels[y][x];
+				//colors[x] = rgb565_conv(pixel.red, pixel.green, pixel.blue);
+				colors[x] = pixels[y][x];
+			}
+			lcdDrawMultiPixels(dev, offsetX, y+offsetY, jpegWidth, colors);
+			vTaskDelay(1);
+		}
+
+		free(colors);
+		release_image(&pixels, width, height);
+		ESP_LOGD(__FUNCTION__, "Finish");
+	} else {
+		ESP_LOGE(__FUNCTION__, "decode_image err=%d", err);
+	}
+
+	endTick = xTaskGetTickCount();
+	diffTick = endTick - startTick;
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%"PRIu32,diffTick*portTICK_PERIOD_MS);
+	return diffTick;
+}
+
+TickType_t PNGTest(ST7735_t * dev, char * file, int width, int height) {
+	TickType_t startTick, endTick, diffTick;
+	startTick = xTaskGetTickCount();
+
+	lcdSetFontDirection(dev, 0);
+	lcdFillScreen(dev, BLACK);
+
+	// open PNG file
+	FILE* fp = fopen(file, "rb");
+	if (fp == NULL) {
+		ESP_LOGW(__FUNCTION__, "File not found [%s]", file);
+		return 0;
+	}
+
+	char buf[1024];
+	size_t remain = 0;
+	int len;
+
+	pngle_t *pngle = pngle_new(width, height);
+	ESP_LOGD(__FUNCTION__, "pngle=%p", pngle);
+	if (pngle == NULL) {
+		fclose(fp);
+		return 0;
+	}
+
+	pngle_set_init_callback(pngle, png_init);
+	pngle_set_draw_callback(pngle, png_draw);
+	pngle_set_done_callback(pngle, png_finish);
+
+	double display_gamma = 2.2;
+	pngle_set_display_gamma(pngle, display_gamma);
+
+
+	while (!feof(fp)) {
+		if (remain >= sizeof(buf)) {
+			ESP_LOGE(__FUNCTION__, "Buffer exceeded");
+			while(1) vTaskDelay(1);
+		}
+
+		len = fread(buf + remain, 1, sizeof(buf) - remain, fp);
+		if (len <= 0) {
+			//printf("EOF\n");
+			break;
+		}
+
+		int fed = pngle_feed(pngle, buf, remain + len);
+		if (fed < 0) {
+			ESP_LOGE(__FUNCTION__, "ERROR; %s", pngle_error(pngle));
+			pngle_destroy(pngle, width, height);
+			return 0;
+		}
+
+		remain = remain + len - fed;
+		if (remain > 0) memmove(buf, buf + fed, remain);
+	}
+	fclose(fp);
+
+	uint16_t pngWidth = width;
+	uint16_t offsetX = 0;
+	if (width > pngle->imageWidth) {
+		pngWidth = pngle->imageWidth;
+		offsetX = (width - pngle->imageWidth) / 2;
+	}
+	ESP_LOGD(__FUNCTION__, "pngWidth=%d offsetX=%d", pngWidth, offsetX);
+
+	uint16_t pngHeight = height;
+	uint16_t offsetY = 0;
+	if (height > pngle->imageHeight) {
+		pngHeight = pngle->imageHeight;
+		offsetY = (height - pngle->imageHeight) / 2;
+	}
+	ESP_LOGD(__FUNCTION__, "pngHeight=%d offsetY=%d", pngHeight, offsetY);
+	uint16_t *colors = (uint16_t*)malloc(sizeof(uint16_t) * pngWidth);
+	if (colors == NULL) {
+		ESP_LOGE(__FUNCTION__, "malloc fail");
+		pngle_destroy(pngle, width, height);
+		return 0;
+	}
+
+#if 0
+	for(int y = 0; y < pngHeight; y++){
+		for(int x = 0;x < pngWidth; x++){
+			pixel_png pixel = pngle->pixels[y][x];
+			uint16_t color = rgb565_conv(pixel.red, pixel.green, pixel.blue);
+			lcdDrawPixel(dev, x+offsetX, y+offsetY, color);
+		}
+	}
+#endif
+
+	for(int y = 0; y < pngHeight; y++){
+		for(int x = 0;x < pngWidth; x++){
+			//pixel_png pixel = pngle->pixels[y][x];
+			//colors[x] = rgb565_conv(pixel.red, pixel.green, pixel.blue);
+			colors[x] = pngle->pixels[y][x];
+		}
+		lcdDrawMultiPixels(dev, offsetX, y+offsetY, pngWidth, colors);
+		vTaskDelay(1);
+	}
+	free(colors);
+	pngle_destroy(pngle, width, height);
+
+	endTick = xTaskGetTickCount();
+	diffTick = endTick - startTick;
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%"PRIu32,diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -427,7 +764,7 @@ TickType_t ScrollTest(ST7735_t * dev, FontxFile *fx, int width, int height) {
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%"PRIu32,diffTick*portTICK_PERIOD_MS);
 	return diffTick;
 }
 
@@ -460,7 +797,7 @@ void tft(void *pvParameters)
 #endif
 
 	while (1) {
-		ESP_LOGI(TAG, "Mainloop Start");
+		ESP_LOGD(TAG, "Mainloop Start");
 		AXP192_ScreenBreath(15);
 
 		FillTest(&dev, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -499,6 +836,19 @@ void tft(void *pvParameters)
 		ScrollTest(&dev, fx16, SCREEN_WIDTH, SCREEN_HEIGHT);
 		WAIT;
 
+		char file[32];
+		strcpy(file, "/spiffs/esp32_80.bmp");
+		BMPTest(&dev, file, SCREEN_WIDTH, SCREEN_HEIGHT);
+		WAIT;
+
+		strcpy(file, "/spiffs/esp32.jpeg");
+		JPEGTest(&dev, file, SCREEN_WIDTH, SCREEN_HEIGHT);
+		WAIT;
+
+		strcpy(file, "/spiffs/esp_logo.png");
+		PNGTest(&dev, file, SCREEN_WIDTH, SCREEN_HEIGHT);
+		WAIT;
+
 		// Multi Font Test
 		uint16_t color;
 		uint8_t ascii[20];
@@ -524,10 +874,17 @@ void tft(void *pvParameters)
 		color = BLACK;
 		lcdSetFontDirection(&dev, 1);
 		xpos = SCREEN_WIDTH-(24 * 2);
-		strcpy((char *)ascii, " Push Button");
+		strcpy((char *)ascii, " Fade Out...");
 		lcdDrawString(&dev, fx24, xpos, 0, ascii, color);
 
 		int Brightness = 15;
+		while(1){
+			AXP192_ScreenBreath(Brightness);
+			vTaskDelay(50);
+			Brightness--;
+			if (Brightness == 5) break;
+		}
+#if 0
 		while(1) {
 			int level = gpio_get_level(GPIO_NUM_37);
 			if (level == 0) {
@@ -544,9 +901,8 @@ void tft(void *pvParameters)
 			}
 			vTaskDelay(1);
 		}
-
-		ESP_LOGI(TAG, "Mainloop End");
-		vTaskDelay(INTERVAL);
+#endif
+		ESP_LOGD(TAG, "Mainloop End");
 	} // end while
 	
 	// nerver reach
@@ -563,7 +919,7 @@ void app_main(void)
 	esp_vfs_spiffs_conf_t conf = {
 		.base_path = "/spiffs",
 		.partition_label = NULL,
-		.max_files = 6,
+		.max_files = 10,
 		.format_if_mount_failed =true
 	};
 
