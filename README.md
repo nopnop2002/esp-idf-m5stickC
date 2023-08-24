@@ -5,7 +5,7 @@ Example code for driving M5StickC ST7735S display using ESP-IDF's SPI driver.
 ![M5StickC-2](https://user-images.githubusercontent.com/6020549/57962798-88284680-7956-11e9-862d-365667c9941d.JPG)
 
 # Software requirements
-esp-idf v4.4/v5.0.   
+esp-idf v4.4/v5.x.   
 
 # How to build
 ```

@@ -28,9 +28,13 @@
 #include <stdint.h>
 #include <math.h>
 
-#include "esp_log.h"
-//#include "miniz.h"
+#include "freertos/FreeRTOS.h"
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
+#include "miniz.h"
+#else
 #include "rom/miniz.h"
+#endif
+#include "esp_log.h"
 #include "pngle.h"
 
 #define PNGLE_ERROR(s) (pngle->error = (s), pngle->state = PNGLE_STATE_ERROR, -1)
