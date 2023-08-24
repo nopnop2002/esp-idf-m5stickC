@@ -59,3 +59,6 @@ strcpy((char *)ascii, "MyFont");
 lcdDrawString(dev, yourFont, x, y, ascii, color);
 ```
 
+
+# Reference   
+https://github.com/nopnop2002/esp-idf-m5stickC-Plus
