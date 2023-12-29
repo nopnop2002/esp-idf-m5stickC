@@ -59,6 +59,19 @@ strcpy((char *)ascii, "MyFont");
 lcdDrawString(dev, yourFont, x, y, ascii, color);
 ```
 
+# Add your color   
+Change here.   
+```
+#define RED    rgb565(255,   0,   0) // 0xf800
+#define GREEN  rgb565(  0, 255,   0) // 0x07e0
+#define BLUE   rgb565(  0,   0, 255) // 0x001f
+#define BLACK  rgb565(  0,   0,   0) // 0x0000
+#define WHITE  rgb565(255, 255, 255) // 0xffff
+#define GRAY   rgb565(128, 128, 128) // 0x8410
+#define YELLOW rgb565(255, 255,   0) // 0xFFE0
+#define CYAN   rgb565(  0, 156, 209) // 0x04FA
+#define PURPLE rgb565(128,   0, 128) // 0x8010
+```
 
 # Reference   
 https://github.com/nopnop2002/esp-idf-m5stickC-Plus
