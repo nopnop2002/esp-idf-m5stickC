@@ -59,7 +59,7 @@ strcpy((char *)ascii, "MyFont");
 lcdDrawString(dev, yourFont, x, y, ascii, color);
 ```
 
-# Add your color   
+# How to add your color   
 Change here.   
 ```
 #define RED    rgb565(255,   0,   0) // 0xf800
