@@ -43,6 +43,18 @@ Mincyo Font.
 ![M5StickC-10](https://user-images.githubusercontent.com/6020549/57962814-a68e4200-7956-11e9-95ff-c735b336036d.JPG)
 
 # Font File   
+This project uses the following as default fonts:   
+- font/ILGH16XB.FNT // 8x16Dot Gothic
+- font/ILGH24XB.FNT // 12x24Dot Gothic
+- font/ILGH32XB.FNT // 16x32Dot Gothic
+- font/ILMH16XB.FNT // 8x16Dot Mincyo
+- font/ILMH24XB.FNT // 12x24Dot Mincyo
+- font/ILMH32XB.FNT // 16x32Dot Mincyo
+
+From 0x00 to 0x7f, the characters image of Alphanumeric are stored.   
+From 0x80 to 0xff, the characters image of Japanese are stored.   
+Changing this file will change the font.
+
 You can add your original font file.   
 The format of the font file is the FONTX format.   
 Your font file is put in font directory.   
@@ -56,14 +68,6 @@ This can be done on Windows 10.
 Developer page is [here](http://elm-chan.org/fsw_e.html).   
 
 ![fontx-editor-1](https://github.com/user-attachments/assets/76a8c96f-74c3-4583-a4f1-5664f0e81f3a)
-
-This project uses the following as default fonts:   
-- font/ILGH16XB.FNT // 8x16Dot Gothic
-- font/ILGH24XB.FNT // 12x24Dot Gothic
-- font/ILGH32XB.FNT // 16x32Dot Gothic
-- font/ILMH16XB.FNT // 8x16Dot Mincyo
-- font/ILMH24XB.FNT // 12x24Dot Mincyo
-- font/ILMH32XB.FNT // 16x32Dot Mincyo
 
 # Convert from TTF font to FONTX font  
 step1)   
