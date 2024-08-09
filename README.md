@@ -42,7 +42,6 @@ Gothic Font.
 Mincyo Font.   
 ![M5StickC-10](https://user-images.githubusercontent.com/6020549/57962814-a68e4200-7956-11e9-95ff-c735b336036d.JPG)
 
-
 # Font File   
 You can add your original font file.   
 The format of the font file is the FONTX format.   
@@ -50,6 +49,13 @@ Your font file is put in font directory.
 Your font file is uploaded to SPIFFS partition using meke flash.   
 
 Please refer [this](http://elm-chan.org/docs/dosv/fontx_e.html) page about FONTX format.   
+
+# Font File Editor(FONTX Editor)   
+[There](http://elm-chan.org/fsw/fontxedit.zip) is a font file editor.   
+This can be done on Windows 10.   
+Developer page is [here](http://elm-chan.org/fsw_e.html).   
+
+![fontx-editor-1](https://github.com/user-attachments/assets/76a8c96f-74c3-4583-a4f1-5664f0e81f3a)
 
 # Convert from TTF font to FONTX font  
 step1)   
