@@ -57,6 +57,7 @@ void lcdDrawArrow(ST7735_t * dev, uint16_t x0, uint16_t y0, uint16_t x1, uint16_
 void lcdDrawFillArrow(ST7735_t * dev, uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t w, uint16_t color);
 int lcdDrawChar(ST7735_t * dev, FontxFile *fx, uint16_t x, uint16_t y, uint8_t ascii, uint16_t color);
 int lcdDrawString(ST7735_t * dev, FontxFile *fx, uint16_t x, uint16_t y, uint8_t * ascii, uint16_t color);
+int lcdDrawCode(ST7735_t * dev, FontxFile *fx, uint16_t x,uint16_t y,uint8_t code,uint16_t color);
 //int lcdDrawSJISChar(ST7735_t * dev, FontxFile *fx, uint16_t x, uint16_t y, uint16_t sjis, uint16_t color);
 //int lcdDrawUTF8Char(ST7735_t * dev, FontxFile *fx, uint16_t x, uint16_t y, uint8_t *utf8, uint16_t color);
 //int lcdDrawUTF8String(ST7735_t * dev, FontxFile *fx, uint16_t x, uint16_t y, unsigned char *utfs, uint16_t color);

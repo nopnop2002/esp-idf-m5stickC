@@ -143,14 +143,14 @@ bool spi_master_write_color(ST7735_t * dev, uint16_t color, uint16_t size)
 // Add 202001
 bool spi_master_write_colors(ST7735_t * dev, uint16_t * colors, uint16_t size)
 {
-    static uint8_t Byte[1024];
-    int index = 0;
-    for(int i=0;i<size;i++) {
-        Byte[index++] = (colors[i] >> 8) & 0xFF;
-        Byte[index++] = colors[i] & 0xFF;
-    }
-    gpio_set_level( dev->_dc, SPI_Data_Mode );
-    return spi_master_write_byte( dev->_SPIHandle, Byte, size*2);
+	static uint8_t Byte[1024];
+	int index = 0;
+	for(int i=0;i<size;i++) {
+		Byte[index++] = (colors[i] >> 8) & 0xFF;
+		Byte[index++] = colors[i] & 0xFF;
+	}
+	gpio_set_level( dev->_dc, SPI_Data_Mode );
+	return spi_master_write_byte( dev->_SPIHandle, Byte, size*2);
 }
 
 void delayMS(int ms) {
@@ -311,20 +311,20 @@ void lcdDrawPixel(ST7735_t * dev, uint16_t x, uint16_t y, uint16_t color){
 // size:Number of colors
 // colors:colors
 void lcdDrawMultiPixels(ST7735_t * dev, uint16_t x, uint16_t y, uint16_t size, uint16_t * colors) {
-    if (x+size > dev->_width) return;
-    if (y >= dev->_height) return;
+	if (x+size > dev->_width) return;
+	if (y >= dev->_height) return;
 
-    uint16_t _x1 = x + dev->_offsetx;
-    uint16_t _x2 = _x1 + (size-1);
-    uint16_t _y1 = y + dev->_offsety;
-    uint16_t _y2 = _y1;
+	uint16_t _x1 = x + dev->_offsetx;
+	uint16_t _x2 = _x1 + (size-1);
+	uint16_t _y1 = y + dev->_offsety;
+	uint16_t _y2 = _y1;
 
-    spi_master_write_command(dev, 0x2A);    // set column(x) address
-    spi_master_write_addr(dev, _x1, _x2);
-    spi_master_write_command(dev, 0x2B);    // set Page(y) address
-    spi_master_write_addr(dev, _y1, _y2);
-    spi_master_write_command(dev, 0x2C);    //  Memory Write
-    spi_master_write_colors(dev, colors, size);
+	spi_master_write_command(dev, 0x2A);	// set column(x) address
+	spi_master_write_addr(dev, _x1, _x2);
+	spi_master_write_command(dev, 0x2B);	// set Page(y) address
+	spi_master_write_addr(dev, _y1, _y2);
+	spi_master_write_command(dev, 0x2C);	//	Memory Write
+	spi_master_write_colors(dev, colors, size);
 }
 
 // Draw rectangule of filling
@@ -751,6 +751,28 @@ int lcdDrawString(ST7735_t * dev, FontxFile *fx, uint16_t x, uint16_t y, uint8_t
 		if (dev->_font_direction == 3)
 			y = lcdDrawChar(dev, fx, x, y, ascii[i], color);
 	}
+	if (dev->_font_direction == 0) return x;
+	if (dev->_font_direction == 2) return x;
+	if (dev->_font_direction == 1) return y;
+	if (dev->_font_direction == 3) return y;
+	return 0;
+}
+
+// Draw Non-Alphanumeric character
+// x:X coordinate
+// y:Y coordinate
+// code:character code
+// color:color
+int lcdDrawCode(ST7735_t * dev, FontxFile *fx, uint16_t x,uint16_t y,uint8_t code,uint16_t color) {
+	if(_DEBUG_)printf("code=%x x=%d y=%d\n",code,x,y);
+	if (dev->_font_direction == 0)
+		x = lcdDrawChar(dev, fx, x, y, code, color);
+	if (dev->_font_direction == 1)
+		y = lcdDrawChar(dev, fx, x, y, code, color);
+	if (dev->_font_direction == 2)
+		x = lcdDrawChar(dev, fx, x, y, code, color);
+	if (dev->_font_direction == 3)
+		y = lcdDrawChar(dev, fx, x, y, code, color);
 	if (dev->_font_direction == 0) return x;
 	if (dev->_font_direction == 2) return x;
 	if (dev->_font_direction == 1) return y;

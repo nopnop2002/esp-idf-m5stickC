@@ -69,6 +69,53 @@ Developer page is [here](http://elm-chan.org/fsw_e.html).
 
 ![fontx-editor-1](https://github.com/user-attachments/assets/76a8c96f-74c3-4583-a4f1-5664f0e81f3a)
 
+# Convert from BDF font to FONTX font   
+step1)   
+download Font File Editor(FONTX Editor) from [here](http://elm-chan.org/fsw_e.html).   
+
+step2)   
+download BDF font file from Internet.   
+fontxedit.exe can __ONLY__ import Monospaced bitmap fonts file.   
+Monospaced bitmap fonts can also be downloaded [here](https://github.com/Tecate/bitmap-fonts).
+u8g2 library contains many BDF fonts.   
+
+step3)   
+import the BDF font file into your fontxedit.exe.   
+this tool can convert from BDF to FONTX.   
+![fontx-editor-2](https://github.com/user-attachments/assets/e47c6b07-88a5-4a10-929f-9956bffa3d76)
+
+step4)   
+check font pattern.   
+when you have made any changes, press the apply button.   
+![emoticons21-1](https://github.com/user-attachments/assets/8a094393-2fa4-4722-88b4-154d6b3ecf1f)
+
+step5)   
+adjust font size.   
+![emoticons21-2](https://github.com/user-attachments/assets/4e3280c9-7d6e-4fee-99f2-1d8f029c2bf6)
+
+step6)   
+save as .fnt file from your fontedit.exe.   
+![emoticons21-3](https://github.com/user-attachments/assets/7d4c7519-7d80-4098-8106-e84894b009dc)
+
+step7)   
+upload your font file to $HOME/esp-idf-m5stickC/font directory.   
+
+step8)   
+add font to use   
+```
+FontxFile fx32E[2];
+InitFontx(fx32E,"/spiffs/emoticons21.fnt",""); // 24x24Dot Smile
+
+FontxFile fx32S[2];
+InitFontx(fx32S,"/spiffs/Scroll-o-Sprites.fnt",""); // 16x16Dot Emoji
+```
+
+This is a 24x24 font converted from emoticons21.bdf from u8g2 library.   
+![bdf-font-1](https://github.com/user-attachments/assets/6a8f8dd1-7716-44a4-b234-903275da698c)
+
+This is a 16x16 font converted from Scroll-o-Sprites.bdf from u8g2 library.   
+![bdf-font-2](https://github.com/user-attachments/assets/506b82bb-577d-4628-9cfb-b93b115b43f1)
+
 # Convert from TTF font to FONTX font  
 step1)   
 Download WFONTX64.exe from [here](https://github.com/nemuisan/WFONTX64/releases).
