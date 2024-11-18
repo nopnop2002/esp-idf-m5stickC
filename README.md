@@ -76,7 +76,7 @@ download Font File Editor(FONTX Editor) from [here](http://elm-chan.org/fsw_e.ht
 step2)   
 download BDF font file from Internet.   
 fontxedit.exe can __ONLY__ import Monospaced bitmap fonts file.   
-Monospaced bitmap fonts can also be downloaded [here](https://github.com/Tecate/bitmap-fonts).
+Monospaced bitmap fonts can also be downloaded [here](https://github.com/Tecate/bitmap-fonts).   
 u8g2 library contains many BDF fonts.   
 
 step3)   
@@ -86,7 +86,6 @@ this tool can convert from BDF to FONTX.
 
 step4)   
 check font pattern.   
-when you have made any changes, press the apply button.   
 ![emoticons21-1](https://github.com/user-attachments/assets/8a094393-2fa4-4722-88b4-154d6b3ecf1f)
 
 step5)   
@@ -111,10 +110,10 @@ InitFontx(fx32S,"/spiffs/Scroll-o-Sprites.fnt",""); // 16x16Dot Emoji
 ```
 
 This is a 24x24 font converted from emoticons21.bdf from u8g2 library.   
-![bdf-font-1](https://github.com/user-attachments/assets/6a8f8dd1-7716-44a4-b234-903275da698c)
+![bdf-font-1](https://github.com/user-attachments/assets/5b3cf0d4-0495-40b3-b1d2-f1d75a25b06e)
 
 This is a 16x16 font converted from Scroll-o-Sprites.bdf from u8g2 library.   
-![bdf-font-2](https://github.com/user-attachments/assets/506b82bb-577d-4628-9cfb-b93b115b43f1)
+![bdf-font-2](https://github.com/user-attachments/assets/a5f2022e-86a0-47ac-87a8-b88c77e7a959)
 
 # Convert from TTF font to FONTX font  
 step1)   
