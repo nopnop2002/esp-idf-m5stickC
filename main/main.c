@@ -30,6 +30,7 @@
 #define GPIO_CS 5
 #define GPIO_DC 23
 #define GPIO_RESET 18
+#define FRAME_BUFFER true
 
 #define INTERVAL 400
 
@@ -77,11 +78,13 @@ TickType_t FillTest(ST7735_t * dev, int width, int height) {
 	startTick = xTaskGetTickCount();
 
 	lcdFillScreen(dev, RED);
+	lcdDrawFinish(dev);
 	vTaskDelay(50);
 	lcdFillScreen(dev, GREEN);
+	lcdDrawFinish(dev);
 	vTaskDelay(50);
 	lcdFillScreen(dev, BLUE);
-	vTaskDelay(50);
+	lcdDrawFinish(dev);
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
@@ -100,6 +103,7 @@ TickType_t ColorBarTest(ST7735_t * dev, int width, int height) {
 	lcdDrawFillRect(dev, 0, 0, width-1, y1-1, RED);
 	lcdDrawFillRect(dev, 0, y1-1, width-1, y2-1, GREEN);
 	lcdDrawFillRect(dev, 0, y2-1, width-1, height-1, BLUE);
+	lcdDrawFinish(dev);
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
@@ -142,6 +146,7 @@ TickType_t ArrowTest(ST7735_t * dev, FontxFile *fx, int width, int height) {
 	lcdDrawArrow(dev, 69, 149, 79, 159, 5, color);
 	strcpy((char *)ascii, "79,159");
 	lcdDrawString(dev, fx, 30, 140-fontHeight, ascii, color);
+	lcdDrawFinish(dev);
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
@@ -191,6 +196,7 @@ TickType_t HorizontalTest(ST7735_t * dev, FontxFile *fx, int width, int height) 
 	lcdDrawString(dev, fx, width-1, height-(fontHeight*3)-1, ascii, color);
 	lcdSetFontUnderLine(dev, BLUE);
 	lcdDrawString(dev, fx, width-1, height-(fontHeight*4)-1, ascii, color);
+	lcdDrawFinish(dev);
 	lcdUnsetFontFill(dev);
 	lcdUnsetFontUnderLine(dev);
 
@@ -242,6 +248,7 @@ TickType_t VerticalTest(ST7735_t * dev, FontxFile *fx, int width, int height) {
 	lcdDrawString(dev, fx, (fontHeight*3)-1, height-1, ascii, color);
 	lcdSetFontUnderLine(dev, BLUE);
 	lcdDrawString(dev, fx, (fontHeight*4)-1, height-1, ascii, color);
+	lcdDrawFinish(dev);
 	lcdUnsetFontFill(dev);
 	lcdUnsetFontUnderLine(dev);
 
@@ -267,6 +274,7 @@ TickType_t LineTest(ST7735_t * dev, int width, int height) {
 	for(int xpos=0;xpos<width;xpos=xpos+10) {
 		lcdDrawLine(dev, xpos, 0, xpos, height, color);
 	}
+	lcdDrawFinish(dev);
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
@@ -287,6 +295,7 @@ TickType_t CircleTest(ST7735_t * dev, int width, int height) {
 	for(int i=5;i<height;i=i+5) {
 		lcdDrawCircle(dev, xpos, ypos, i, color);
 	}
+	lcdDrawFinish(dev);
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
@@ -307,6 +316,7 @@ TickType_t RoundRectTest(ST7735_t * dev, int width, int height) {
 		//ESP_LOGI(TAG, "i=%d, width-i-1=%d",i, width-i-1);
 		lcdDrawRoundRect(dev, i, i, (width-i-1), (height-i-1), 10, color);
 	}
+	lcdDrawFinish(dev);
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
@@ -335,6 +345,7 @@ TickType_t FillRectTest(ST7735_t * dev, int width, int height) {
 		uint16_t size=rand()%(width/5);
 		lcdDrawFillRect(dev, xpos, ypos, xpos+size, ypos+size, color);
 	}
+	lcdDrawFinish(dev);
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
@@ -357,6 +368,7 @@ TickType_t ColorTest(ST7735_t * dev, int width, int height) {
 		color = color >> 1;
 		ypos = ypos + delta;
 	}
+	lcdDrawFinish(dev);
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
@@ -507,6 +519,7 @@ TickType_t BMPTest(ST7735_t * dev, char * file, int width, int height) {
 		} // end for row
 		free(colors);
 	} // end if
+	lcdDrawFinish(dev);
 	free(result);
 	fclose(fp);
 
@@ -574,6 +587,7 @@ TickType_t JPEGTest(ST7735_t * dev, char * file, int width, int height) {
 			vTaskDelay(1);
 		}
 
+		lcdDrawFinish(dev);
 		free(colors);
 		release_image(&pixels, width, height);
 		ESP_LOGD(__FUNCTION__, "Finish");
@@ -685,6 +699,7 @@ TickType_t PNGTest(ST7735_t * dev, char * file, int width, int height) {
 		lcdDrawMultiPixels(dev, offsetX, y+offsetY, pngWidth, colors);
 		vTaskDelay(1);
 	}
+	lcdDrawFinish(dev);
 	free(colors);
 	pngle_destroy(pngle, width, height);
 
@@ -735,6 +750,7 @@ TickType_t CodeTest(ST7735_t * dev, FontxFile *fx, int width, int height, uint16
 		if (code == 0xFF) break;
 		if (code > end) break;
 	}
+	lcdDrawFinish(dev);
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
@@ -808,6 +824,7 @@ TickType_t ScrollTest(ST7735_t * dev, FontxFile *fx, int width, int height) {
 		} else {
 			lcdDrawString(dev, fx, 0, fontHeight*(last+2)-1, (uint8_t *)save[last].line, save[last].color);
 		}
+		lcdDrawFinish(dev);
 		vTaskDelay(25);
 	}
 
@@ -839,12 +856,14 @@ void tft(void *pvParameters)
 
 	ST7735_t dev;
 	spi_master_init(&dev, GPIO_MOSI, GPIO_SCLK, GPIO_CS, GPIO_DC, GPIO_RESET);
-	lcdInit(&dev, SCREEN_WIDTH, SCREEN_HEIGHT, OFFSET_X, OFFSET_Y);
+	lcdInit(&dev, SCREEN_WIDTH, SCREEN_HEIGHT, OFFSET_X, OFFSET_Y, FRAME_BUFFER);
 
 #if 0
 	//For TEST
 	while(1) {
 		FillTest(&dev, SCREEN_WIDTH, SCREEN_HEIGHT);
+		WAIT;
+		ArrowTest(&dev, fx16, SCREEN_WIDTH, SCREEN_HEIGHT);
 		WAIT;
 		CodeTest(&dev, fx32E, SCREEN_WIDTH, SCREEN_HEIGHT, 0x20, 0x37);
 		WAIT;
@@ -930,6 +949,7 @@ void tft(void *pvParameters)
 		xpos = xpos - 32;
 		strcpy((char *)ascii, "32Dot Font");
 		lcdDrawString(&dev, fx32, xpos, 0, ascii, color);
+		lcdDrawFinish(&dev);
 		WAIT;
 
 		// Brightness control
@@ -947,8 +967,10 @@ void tft(void *pvParameters)
 			Brightness--;
 			if (Brightness == 5) break;
 		}
+
 #if 0
 		while(1) {
+			// wait until button is pressed
 			int level = gpio_get_level(GPIO_NUM_37);
 			if (level == 0) {
 				ESP_LOGI(TAG, "Push Button Brightness=%d",Brightness);
@@ -956,6 +978,7 @@ void tft(void *pvParameters)
 				if (Brightness == 5) break;
 				AXP192_ScreenBreath(Brightness);
 
+				// wait until button is released
 				while(1) {
 					level = gpio_get_level(GPIO_NUM_37);
 					if (level == 1) break;

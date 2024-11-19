@@ -22,7 +22,6 @@ static const int SPI_Frequency = SPI_MASTER_FREQ_20M;
 //static const int SPI_Frequency = SPI_MASTER_FREQ_40M;
 //static const int SPI_Frequency = SPI_MASTER_FREQ_80M;
 
-
 void spi_master_init(ST7735_t * dev, int16_t GPIO_MOSI, int16_t GPIO_SCLK, int16_t GPIO_CS, int16_t GPIO_DC, int16_t GPIO_RESET)
 {
 	esp_err_t ret;
@@ -160,7 +159,7 @@ void delayMS(int ms) {
 	vTaskDelay(xTicksToDelay);
 }
 
-void lcdInit(ST7735_t * dev, int width, int height, int offsetx, int offsety)
+void lcdInit(ST7735_t * dev, int width, int height, int offsetx, int offsety, bool frame_buffer)
 {
 	dev->_width = width;
 	dev->_height = height;
@@ -284,6 +283,17 @@ void lcdInit(ST7735_t * dev, int width, int height, int offsetx, int offsety)
 
 	spi_master_write_command(dev, 0x29);	//Display On
 	delayMS(100);
+
+	dev->_use_frame_buffer = false;
+	if (frame_buffer) {
+		dev->_frame_buffer = heap_caps_malloc(sizeof(uint16_t)*width*height, MALLOC_CAP_DMA);
+		if (dev->_frame_buffer == NULL) {
+			ESP_LOGE(TAG, "heap_caps_malloc fail");
+		} else {
+			ESP_LOGI(TAG, "heap_caps_malloc success");
+			dev->_use_frame_buffer = true;
+		}
+	}
 }
 
 
@@ -295,14 +305,18 @@ void lcdDrawPixel(ST7735_t * dev, uint16_t x, uint16_t y, uint16_t color){
 	if (x >= dev->_width) return;
 	if (y >= dev->_height) return;
 
-	uint16_t _x = x + dev->_offsetx;
-	uint16_t _y = y + dev->_offsety;
-	spi_master_write_command(dev, 0x2A);	// set column(x) address
-	spi_master_write_addr(dev, _x, _x);
-	spi_master_write_command(dev, 0x2B);	// set Page(y) address
-	spi_master_write_addr(dev, _y, _y);
-	spi_master_write_command(dev, 0x2C);	//	Memory Write
-	spi_master_write_data_word(dev, color, 0);
+	if (dev->_use_frame_buffer) {
+		dev->_frame_buffer[y*dev->_width+x] = color;
+	} else {
+		uint16_t _x = x + dev->_offsetx;
+		uint16_t _y = y + dev->_offsety;
+		spi_master_write_command(dev, 0x2A);	// set column(x) address
+		spi_master_write_addr(dev, _x, _x);
+		spi_master_write_command(dev, 0x2B);	// set Page(y) address
+		spi_master_write_addr(dev, _y, _y);
+		spi_master_write_command(dev, 0x2C);	//	Memory Write
+		spi_master_write_data_word(dev, color, 0);
+	}
 }
 
 // Draw multi pixel
@@ -314,17 +328,30 @@ void lcdDrawMultiPixels(ST7735_t * dev, uint16_t x, uint16_t y, uint16_t size, u
 	if (x+size > dev->_width) return;
 	if (y >= dev->_height) return;
 
-	uint16_t _x1 = x + dev->_offsetx;
-	uint16_t _x2 = _x1 + (size-1);
-	uint16_t _y1 = y + dev->_offsety;
-	uint16_t _y2 = _y1;
+	if (dev->_use_frame_buffer) {
+		uint16_t _x1 = x;
+		uint16_t _x2 = _x1 + (size-1);
+		uint16_t _y1 = y;
+		uint16_t _y2 = _y1;
+		int16_t index = 0;
+		for (int16_t j = _y1; j <= _y2; j++){
+			for(int16_t i = _x1; i <= _x2; i++){
+				 dev->_frame_buffer[j*dev->_width+i] = colors[index++];
+			}
+		}
+	} else {
+		uint16_t _x1 = x + dev->_offsetx;
+		uint16_t _x2 = _x1 + (size-1);
+		uint16_t _y1 = y + dev->_offsety;
+		uint16_t _y2 = _y1;
 
-	spi_master_write_command(dev, 0x2A);	// set column(x) address
-	spi_master_write_addr(dev, _x1, _x2);
-	spi_master_write_command(dev, 0x2B);	// set Page(y) address
-	spi_master_write_addr(dev, _y1, _y2);
-	spi_master_write_command(dev, 0x2C);	//	Memory Write
-	spi_master_write_colors(dev, colors, size);
+		spi_master_write_command(dev, 0x2A);	// set column(x) address
+		spi_master_write_addr(dev, _x1, _x2);
+		spi_master_write_command(dev, 0x2B);	// set Page(y) address
+		spi_master_write_addr(dev, _y1, _y2);
+		spi_master_write_command(dev, 0x2C);	//	Memory Write
+		spi_master_write_colors(dev, colors, size);
+	}
 }
 
 // Draw rectangule of filling
@@ -339,20 +366,27 @@ void lcdDrawFillRect(ST7735_t * dev, uint16_t x1, uint16_t y1, uint16_t x2, uint
 	if (y1 >= dev->_height) return;
 	if (y2 >= dev->_height) y2=dev->_height-1;
 
-	uint16_t _x1 = x1 + dev->_offsetx;
-	uint16_t _x2 = x2 + dev->_offsetx;
-	uint16_t _y1 = y1 + dev->_offsety;
-	uint16_t _y2 = y2 + dev->_offsety;
+	if (dev->_use_frame_buffer) {
+		for (int16_t j = y1; j <= y2; j++){
+			for(int16_t i = x1; i <= x2; i++){
+				dev->_frame_buffer[j*dev->_width+i] = color;
+			}
+		}
+	} else {
+		uint16_t _x1 = x1 + dev->_offsetx;
+		uint16_t _x2 = x2 + dev->_offsetx;
+		uint16_t _y1 = y1 + dev->_offsety;
+		uint16_t _y2 = y2 + dev->_offsety;
 
-	spi_master_write_command(dev, 0x2A);	// set column(x) address
-	spi_master_write_addr(dev, _x1, _x2);
-	spi_master_write_command(dev, 0x2B);	// set Page(y) address
-	spi_master_write_addr(dev, _y1, _y2);
-	spi_master_write_command(dev, 0x2C);	//	Memory Write
-
-	for(int i=_x1;i<=_x2;i++){
-		uint16_t size = _y2-_y1+1;
-		spi_master_write_color(dev, color, size);
+		spi_master_write_command(dev, 0x2A);	// set column(x) address
+		spi_master_write_addr(dev, _x1, _x2);
+		spi_master_write_command(dev, 0x2B);	// set Page(y) address
+		spi_master_write_addr(dev, _y1, _y2);
+		spi_master_write_command(dev, 0x2C);	//	Memory Write
+		for(int i=_x1;i<=_x2;i++){
+			uint16_t size = _y2-_y1+1;
+			spi_master_write_color(dev, color, size);
+		}
 	}
 }
 
@@ -963,3 +997,26 @@ void lcdUnsetFontUnderLine(ST7735_t * dev) {
 	dev->_font_underline = false;
 }
 
+// Draw Frame Buffer
+void lcdDrawFinish(ST7735_t *dev)
+{
+	if (dev->_use_frame_buffer == false) return;
+
+	spi_master_write_command(dev, 0x2A); // set column(x) address
+	spi_master_write_addr(dev, dev->_offsetx, dev->_offsetx+dev->_width-1);
+	spi_master_write_command(dev, 0x2B); // set Page(y) address
+	spi_master_write_addr(dev, dev->_offsety, dev->_offsety+dev->_height-1);
+	spi_master_write_command(dev, 0x2C); // Memory Write
+
+	//uint16_t size = dev->_width*dev->_height;
+	uint32_t size = dev->_width*dev->_height;
+	uint16_t *image = dev->_frame_buffer;
+	while (size > 0) {
+		// 1024 bytes per time.
+		uint16_t bs = (size > 1024) ? 1024 : size;
+		spi_master_write_colors(dev, image, bs);
+		size -= bs;
+		image += bs;
+	}
+	return;
+}

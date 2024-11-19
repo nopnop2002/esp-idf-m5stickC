@@ -6,15 +6,15 @@
 
 #define rgb565(r, g, b) (((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3))
 
-#define RED    rgb565(255,   0,   0) // 0xf800
-#define GREEN  rgb565(  0, 255,   0) // 0x07e0
-#define BLUE   rgb565(  0,   0, 255) // 0x001f
-#define BLACK  rgb565(  0,   0,   0) // 0x0000
+#define RED    rgb565(255,	 0,   0) // 0xf800
+#define GREEN  rgb565(	0, 255,   0) // 0x07e0
+#define BLUE   rgb565(	0,	 0, 255) // 0x001f
+#define BLACK  rgb565(	0,	 0,   0) // 0x0000
 #define WHITE  rgb565(255, 255, 255) // 0xffff
 #define GRAY   rgb565(128, 128, 128) // 0x8410
 #define YELLOW rgb565(255, 255,   0) // 0xFFE0
-#define CYAN   rgb565(  0, 156, 209) // 0x04FA
-#define PURPLE rgb565(128,   0, 128) // 0x8010
+#define CYAN   rgb565(	0, 156, 209) // 0x04FA
+#define PURPLE rgb565(128,	 0, 128) // 0x8010
 
 typedef enum {DIRECTION0, DIRECTION90, DIRECTION180, DIRECTION270} DIRECTION;
 
@@ -30,6 +30,8 @@ typedef struct {
 	uint16_t _font_underline_color;
 	int16_t _dc;
 	spi_device_handle_t _SPIHandle;
+	bool _use_frame_buffer;
+	uint16_t *_frame_buffer;
 } ST7735_t;
 
 void spi_master_init(ST7735_t * dev, int16_t GPIO_MOSI, int16_t GPIO_SCLK, int16_t GPIO_CS, int16_t GPIO_DC, int16_t GPIO_RESET);
@@ -41,7 +43,7 @@ bool spi_master_write_addr(ST7735_t * dev, uint16_t addr1, uint16_t addr2);
 bool spi_master_write_color(ST7735_t * dev, uint16_t color, uint16_t size);
 
 void delayMS(int ms);
-void lcdInit(ST7735_t * dev, int width, int height, int offsetx, int offsety);
+void lcdInit(ST7735_t * dev, int width, int height, int offsetx, int offsety, bool frame_buffer);
 void lcdDrawPixel(ST7735_t * dev, uint16_t x, uint16_t y, uint16_t color);
 void lcdDrawMultiPixels(ST7735_t * dev, uint16_t x, uint16_t y, uint16_t size, uint16_t * colors);
 void lcdDrawFillRect(ST7735_t * dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
@@ -66,5 +68,6 @@ void lcdSetFontFill(ST7735_t * dev, uint16_t color);
 void lcdUnsetFontFill(ST7735_t * dev);
 void lcdSetFontUnderLine(ST7735_t * dev, uint16_t color);
 void lcdUnsetFontUnderLine(ST7735_t * dev);
+void lcdDrawFinish(ST7735_t *dev);
 #endif /* MAIN_ST7735_H_ */
 
