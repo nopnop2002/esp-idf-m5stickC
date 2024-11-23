@@ -22,7 +22,7 @@ static const int SPI_Frequency = SPI_MASTER_FREQ_20M;
 //static const int SPI_Frequency = SPI_MASTER_FREQ_40M;
 //static const int SPI_Frequency = SPI_MASTER_FREQ_80M;
 
-void spi_master_init(ST7735_t * dev, int16_t GPIO_MOSI, int16_t GPIO_SCLK, int16_t GPIO_CS, int16_t GPIO_DC, int16_t GPIO_RESET)
+void spi_master_init(TFT_t * dev, int16_t GPIO_MOSI, int16_t GPIO_SCLK, int16_t GPIO_CS, int16_t GPIO_DC, int16_t GPIO_RESET)
 {
 	esp_err_t ret;
 
@@ -89,7 +89,7 @@ bool spi_master_write_byte(spi_device_handle_t SPIHandle, const uint8_t* Data, s
 	return true;
 }
 
-bool spi_master_write_command(ST7735_t * dev, uint8_t cmd)
+bool spi_master_write_command(TFT_t * dev, uint8_t cmd)
 {
 	uint8_t Byte = 0;
 	Byte = cmd;
@@ -97,7 +97,7 @@ bool spi_master_write_command(ST7735_t * dev, uint8_t cmd)
 	return spi_master_write_byte( dev->_SPIHandle, &Byte, 1 );
 }
 
-bool spi_master_write_data_byte(ST7735_t * dev, uint8_t data)
+bool spi_master_write_data_byte(TFT_t * dev, uint8_t data)
 {
 	uint8_t Byte = 0;
 	Byte = data;
@@ -106,7 +106,7 @@ bool spi_master_write_data_byte(ST7735_t * dev, uint8_t data)
 }
 
 
-bool spi_master_write_data_word(ST7735_t * dev, uint16_t data, int flag)
+bool spi_master_write_data_word(TFT_t * dev, uint16_t data, int flag)
 {
 	uint8_t Byte[2];
 	Byte[0] = (data >> 8) & 0xFF;
@@ -116,7 +116,7 @@ bool spi_master_write_data_word(ST7735_t * dev, uint16_t data, int flag)
 	return spi_master_write_byte( dev->_SPIHandle, Byte, 2);
 }
 
-bool spi_master_write_addr(ST7735_t * dev, uint16_t addr1, uint16_t addr2)
+bool spi_master_write_addr(TFT_t * dev, uint16_t addr1, uint16_t addr2)
 {
 		static uint8_t Byte[4];
 		Byte[0] = (addr1 >> 8) & 0xFF;
@@ -127,7 +127,7 @@ bool spi_master_write_addr(ST7735_t * dev, uint16_t addr1, uint16_t addr2)
 		return spi_master_write_byte( dev->_SPIHandle, Byte, 4);
 }
 
-bool spi_master_write_color(ST7735_t * dev, uint16_t color, uint16_t size)
+bool spi_master_write_color(TFT_t * dev, uint16_t color, uint16_t size)
 {
 		static uint8_t Byte[1024];
 		int index = 0;
@@ -140,7 +140,7 @@ bool spi_master_write_color(ST7735_t * dev, uint16_t color, uint16_t size)
 }
 
 // Add 202001
-bool spi_master_write_colors(ST7735_t * dev, uint16_t * colors, uint16_t size)
+bool spi_master_write_colors(TFT_t * dev, uint16_t * colors, uint16_t size)
 {
 	static uint8_t Byte[1024];
 	int index = 0;
@@ -159,7 +159,7 @@ void delayMS(int ms) {
 	vTaskDelay(xTicksToDelay);
 }
 
-void lcdInit(ST7735_t * dev, int width, int height, int offsetx, int offsety, bool frame_buffer)
+void lcdInit(TFT_t * dev, int width, int height, int offsetx, int offsety, bool frame_buffer)
 {
 	dev->_width = width;
 	dev->_height = height;
@@ -301,7 +301,7 @@ void lcdInit(ST7735_t * dev, int width, int height, int offsetx, int offsety, bo
 // x:X coordinate
 // y:Y coordinate
 // color:color
-void lcdDrawPixel(ST7735_t * dev, uint16_t x, uint16_t y, uint16_t color){
+void lcdDrawPixel(TFT_t * dev, uint16_t x, uint16_t y, uint16_t color){
 	if (x >= dev->_width) return;
 	if (y >= dev->_height) return;
 
@@ -324,7 +324,7 @@ void lcdDrawPixel(ST7735_t * dev, uint16_t x, uint16_t y, uint16_t color){
 // y:Y coordinate
 // size:Number of colors
 // colors:colors
-void lcdDrawMultiPixels(ST7735_t * dev, uint16_t x, uint16_t y, uint16_t size, uint16_t * colors) {
+void lcdDrawMultiPixels(TFT_t * dev, uint16_t x, uint16_t y, uint16_t size, uint16_t * colors) {
 	if (x+size > dev->_width) return;
 	if (y >= dev->_height) return;
 
@@ -360,7 +360,7 @@ void lcdDrawMultiPixels(ST7735_t * dev, uint16_t x, uint16_t y, uint16_t size, u
 // x2:End X coordinate
 // y2:End Y coordinate
 // color:color
-void lcdDrawFillRect(ST7735_t * dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color) {
+void lcdDrawFillRect(TFT_t * dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color) {
 	if (x1 >= dev->_width) return;
 	if (x2 >= dev->_width) x2=dev->_width-1;
 	if (y1 >= dev->_height) return;
@@ -391,18 +391,18 @@ void lcdDrawFillRect(ST7735_t * dev, uint16_t x1, uint16_t y1, uint16_t x2, uint
 }
 
 // Display Off
-void lcdDisplayOff(ST7735_t * dev) {
+void lcdDisplayOff(TFT_t * dev) {
 	spi_master_write_command(dev, 0x28);	//Display off
 }
  
 // Display On
-void lcdDisplayOn(ST7735_t * dev) {
+void lcdDisplayOn(TFT_t * dev) {
 	spi_master_write_command(dev, 0x29);	//Display on
 }
 
 // Fill screen
 // color:color
-void lcdFillScreen(ST7735_t * dev, uint16_t color) {
+void lcdFillScreen(TFT_t * dev, uint16_t color) {
 	lcdDrawFillRect(dev, 0, 0, dev->_width-1, dev->_height-1, color);
 }
 
@@ -412,7 +412,7 @@ void lcdFillScreen(ST7735_t * dev, uint16_t color) {
 // x2:End X coordinate
 // y2:End Y coordinate
 // color:color 
-void lcdDrawLine(ST7735_t * dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color) {
+void lcdDrawLine(TFT_t * dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color) {
 	int i;
 	int dx,dy;
 	int sx,sy;
@@ -460,7 +460,7 @@ void lcdDrawLine(ST7735_t * dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t
 // x2:End	X coordinate
 // y2:End	Y coordinate
 // color:color
-void lcdDrawRect(ST7735_t * dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color) {
+void lcdDrawRect(TFT_t * dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color) {
 	lcdDrawLine(dev, x1, y1, x2, y1, color);
 	lcdDrawLine(dev, x2, y1, x2, y2, color);
 	lcdDrawLine(dev, x2, y2, x1, y2, color);
@@ -472,7 +472,7 @@ void lcdDrawRect(ST7735_t * dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t
 // y0:Central Y coordinate
 // r:radius
 // color:color
-void lcdDrawCircle(ST7735_t * dev, uint16_t x0, uint16_t y0, uint16_t r, uint16_t color) {
+void lcdDrawCircle(TFT_t * dev, uint16_t x0, uint16_t y0, uint16_t r, uint16_t color) {
 	int x;
 	int y;
 	int err;
@@ -496,7 +496,7 @@ void lcdDrawCircle(ST7735_t * dev, uint16_t x0, uint16_t y0, uint16_t r, uint16_
 // y0:Central Y coordinate
 // r:radius
 // color:color
-void lcdDrawFillCircle(ST7735_t * dev, uint16_t x0, uint16_t y0, uint16_t r, uint16_t color) {
+void lcdDrawFillCircle(TFT_t * dev, uint16_t x0, uint16_t y0, uint16_t r, uint16_t color) {
 	int x;
 	int y;
 	int err;
@@ -525,7 +525,7 @@ void lcdDrawFillCircle(ST7735_t * dev, uint16_t x0, uint16_t y0, uint16_t r, uin
 // y2:End	Y coordinate
 // r:radius
 // color:color
-void lcdDrawRoundRect(ST7735_t * dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t r, uint16_t color) {
+void lcdDrawRoundRect(TFT_t * dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t r, uint16_t color) {
 	int x;
 	int y;
 	int err;
@@ -575,7 +575,7 @@ void lcdDrawRoundRect(ST7735_t * dev, uint16_t x1, uint16_t y1, uint16_t x2, uin
 // w:Width of the botom
 // color:color
 // Thanks http://k-hiura.cocolog-nifty.com/blog/2010/11/post-2a62.html
-void lcdDrawArrow(ST7735_t * dev, uint16_t x0,uint16_t y0,uint16_t x1,uint16_t y1,uint16_t w,uint16_t color) {
+void lcdDrawArrow(TFT_t * dev, uint16_t x0,uint16_t y0,uint16_t x1,uint16_t y1,uint16_t w,uint16_t color) {
 	double Vx= x1 - x0;
 	double Vy= y1 - y0;
 	double v = sqrt(Vx*Vx+Vy*Vy);
@@ -604,7 +604,7 @@ void lcdDrawArrow(ST7735_t * dev, uint16_t x0,uint16_t y0,uint16_t x1,uint16_t y
 // y2:End	Y coordinate
 // w:Width of the botom
 // color:color
-void lcdDrawFillArrow(ST7735_t * dev, uint16_t x0,uint16_t y0,uint16_t x1,uint16_t y1,uint16_t w,uint16_t color) {
+void lcdDrawFillArrow(TFT_t * dev, uint16_t x0,uint16_t y0,uint16_t x1,uint16_t y1,uint16_t w,uint16_t color) {
 	double Vx= x1 - x0;
 	double Vy= y1 - y0;
 	double v = sqrt(Vx*Vx+Vy*Vy);
@@ -641,7 +641,7 @@ void lcdDrawFillArrow(ST7735_t * dev, uint16_t x0,uint16_t y0,uint16_t x1,uint16
 // y:Y coordinate
 // ascii: ascii code
 // color:color
-int lcdDrawChar(ST7735_t * dev, FontxFile *fxs, uint16_t x, uint16_t y, uint8_t ascii, uint16_t color) {
+int lcdDrawChar(TFT_t * dev, FontxFile *fxs, uint16_t x, uint16_t y, uint8_t ascii, uint16_t color) {
 	uint16_t xx,yy,bit,ofs;
 	unsigned char fonts[128]; // font pattern
 	unsigned char pw, ph;
@@ -771,7 +771,7 @@ int lcdDrawChar(ST7735_t * dev, FontxFile *fxs, uint16_t x, uint16_t y, uint8_t 
 	return next;
 }
 
-int lcdDrawString(ST7735_t * dev, FontxFile *fx, uint16_t x, uint16_t y, uint8_t * ascii, uint16_t color) {
+int lcdDrawString(TFT_t * dev, FontxFile *fx, uint16_t x, uint16_t y, uint8_t * ascii, uint16_t color) {
 	int length = strlen((char *)ascii);
 	if(_DEBUG_)printf("lcdDrawString length=%d\n",length);
 	for(int i=0;i<length;i++) {
@@ -797,7 +797,7 @@ int lcdDrawString(ST7735_t * dev, FontxFile *fx, uint16_t x, uint16_t y, uint8_t
 // y:Y coordinate
 // code:character code
 // color:color
-int lcdDrawCode(ST7735_t * dev, FontxFile *fx, uint16_t x,uint16_t y,uint8_t code,uint16_t color) {
+int lcdDrawCode(TFT_t * dev, FontxFile *fx, uint16_t x,uint16_t y,uint8_t code,uint16_t color) {
 	if(_DEBUG_)printf("code=%x x=%d y=%d\n",code,x,y);
 	if (dev->_font_direction == 0)
 		x = lcdDrawChar(dev, fx, x, y, code, color);
@@ -821,7 +821,7 @@ int lcdDrawCode(ST7735_t * dev, FontxFile *fx, uint16_t x,uint16_t y,uint8_t cod
 // y:Y coordinate
 // sjis: SJIS code
 // color:color
-int lcdDrawSJISChar(ST7735_t * dev, FontxFile *fxs, uint16_t x,uint16_t y,uint16_t sjis,uint16_t color) {
+int lcdDrawSJISChar(TFT_t * dev, FontxFile *fxs, uint16_t x,uint16_t y,uint16_t sjis,uint16_t color) {
 	uint16_t xx,yy,bit,ofs;
 	unsigned char fonts[128]; // font pattern
 	unsigned char pw, ph;
@@ -928,7 +928,7 @@ int lcdDrawSJISChar(ST7735_t * dev, FontxFile *fxs, uint16_t x,uint16_t y,uint16
 // y:Y coordinate
 // utf8: UTF8 code
 // color:color
-int lcdDrawUTF8Char(ST7735_t * dev, FontxFile *fx, uint16_t x,uint16_t y,uint8_t *utf8,uint16_t color) {
+int lcdDrawUTF8Char(TFT_t * dev, FontxFile *fx, uint16_t x,uint16_t y,uint8_t *utf8,uint16_t color) {
 	uint16_t sjis[1];
 
 	sjis[0] = UTF2SJIS(utf8);
@@ -941,7 +941,7 @@ int lcdDrawUTF8Char(ST7735_t * dev, FontxFile *fx, uint16_t x,uint16_t y,uint8_t
 // y:Y coordinate
 // utfs: UTF8 string
 // color:color
-int lcdDrawUTF8String(ST7735_t * dev, FontxFile *fx, uint16_t x, uint16_t y, unsigned char *utfs, uint16_t color) {
+int lcdDrawUTF8String(TFT_t * dev, FontxFile *fx, uint16_t x, uint16_t y, unsigned char *utfs, uint16_t color) {
 
 	int i;
 	int spos;
@@ -969,36 +969,36 @@ int lcdDrawUTF8String(ST7735_t * dev, FontxFile *fx, uint16_t x, uint16_t y, uns
 
 // Set font direction
 // dir:Direction
-void lcdSetFontDirection(ST7735_t * dev, uint16_t dir) {
+void lcdSetFontDirection(TFT_t * dev, uint16_t dir) {
 	dev->_font_direction = dir;
 }
 
 // Set font filling
 // color:fill color
-void lcdSetFontFill(ST7735_t * dev, uint16_t color) {
+void lcdSetFontFill(TFT_t * dev, uint16_t color) {
 	dev->_font_fill = true;
 	dev->_font_fill_color = color;
 }
 
 // UnSet font filling
-void lcdUnsetFontFill(ST7735_t * dev) {
+void lcdUnsetFontFill(TFT_t * dev) {
 	dev->_font_fill = false;
 }
 
 // Set font underline
 // color:frame color
-void lcdSetFontUnderLine(ST7735_t * dev, uint16_t color) {
+void lcdSetFontUnderLine(TFT_t * dev, uint16_t color) {
 	dev->_font_underline = true;
 	dev->_font_underline_color = color;
 }
 
 // UnSet font underline
-void lcdUnsetFontUnderLine(ST7735_t * dev) {
+void lcdUnsetFontUnderLine(TFT_t * dev) {
 	dev->_font_underline = false;
 }
 
 // Draw Frame Buffer
-void lcdDrawFinish(ST7735_t *dev)
+void lcdDrawFinish(TFT_t *dev)
 {
 	if (dev->_use_frame_buffer == false) return;
 

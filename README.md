@@ -45,12 +45,12 @@ Mincyo Font.
 
 # Font File   
 This project uses the following as default fonts:   
-- font/ILGH16XB.FNT // 8x16Dot Gothic
-- font/ILGH24XB.FNT // 12x24Dot Gothic
-- font/ILGH32XB.FNT // 16x32Dot Gothic
-- font/ILMH16XB.FNT // 8x16Dot Mincyo
-- font/ILMH24XB.FNT // 12x24Dot Mincyo
-- font/ILMH32XB.FNT // 16x32Dot Mincyo
+- fonts/ILGH16XB.FNT // 8x16Dot Gothic
+- fonts/ILGH24XB.FNT // 12x24Dot Gothic
+- fonts/ILGH32XB.FNT // 16x32Dot Gothic
+- fonts/ILMH16XB.FNT // 8x16Dot Mincyo
+- fonts/ILMH24XB.FNT // 12x24Dot Mincyo
+- fonts/ILMH32XB.FNT // 16x32Dot Mincyo
 
 From 0x00 to 0x7f, the characters image of Alphanumeric are stored.   
 From 0x80 to 0xff, the characters image of Japanese are stored.   
@@ -104,10 +104,10 @@ step8)
 add font to use   
 ```
 FontxFile fx32E[2];
-InitFontx(fx32E,"/spiffs/emoticons21.fnt",""); // 24x24Dot Smile
+InitFontx(fx32E,"/fonts/emoticons21.fnt",""); // 24x24Dot Smile
 
 FontxFile fx32S[2];
-InitFontx(fx32S,"/spiffs/Scroll-o-Sprites.fnt",""); // 16x16Dot Emoji
+InitFontx(fx32S,"/fonts/Scroll-o-Sprites.fnt",""); // 16x16Dot Emoji
 ```
 
 This is a 24x24 font converted from emoticons21.bdf from u8g2 library.   
@@ -148,7 +148,7 @@ Press the RUN button to convert TTF fonts to FONTX format.
 ![WFONTX64-5](https://github.com/user-attachments/assets/d9797e3d-1fd6-4504-b161-c1280f1242c0)
 
 step7)   
-upload your font file to $HOME/esp-idf-m5stickC/font directory.   
+upload your font file to $HOME/esp-idf-m5stickC/fonts directory.   
 
 step8)   
 add font to use   
@@ -156,17 +156,17 @@ add font to use
     FontxFile fx16[2];
     FontxFile fx24[2];
     FontxFile fx32[2];
-    //InitFontx(fx16,"/spiffs/ILGH16XB.FNT",""); // 8x16Dot Gothic
-    //InitFontx(fx24,"/spiffs/ILGH24XB.FNT",""); // 12x24Dot Gothic
-    //InitFontx(fx32,"/spiffs/ILGH32XB.FNT",""); // 16x32Dot Gothic
+    //InitFontx(fx16,"/fonts/ILGH16XB.FNT",""); // 8x16Dot Gothic
+    //InitFontx(fx24,"/fonts/ILGH24XB.FNT",""); // 12x24Dot Gothic
+    //InitFontx(fx32,"/fonts/ILGH32XB.FNT",""); // 16x32Dot Gothic
 
-    //InitFontx(fx16,"/spiffs/ILMH16XB.FNT",""); // 8x16Dot Mincyo
-    //InitFontx(fx24,"/spiffs/ILMH24XB.FNT",""); // 12x24Dot Mincyo
-    //InitFontx(fx32,"/spiffs/ILMH32XB.FNT",""); // 16x32Dot Mincyo
+    //InitFontx(fx16,"/fonts/ILMH16XB.FNT",""); // 8x16Dot Mincyo
+    //InitFontx(fx24,"/fonts/ILMH24XB.FNT",""); // 12x24Dot Mincyo
+    //InitFontx(fx32,"/fonts/ILMH32XB.FNT",""); // 16x32Dot Mincyo
 
-    InitFontx(fx16,"/spiffs/Gigi16.FNT",""); // 8x16Dot Gigi
-    InitFontx(fx24,"/spiffs/Gigi24.FNT",""); // 12x24Dot Gigi
-    InitFontx(fx32,"/spiffs/Gigi32.FNT",""); // 16x32Dot Gigi
+    InitFontx(fx16,"/fonts/Gigi16.FNT",""); // 8x16Dot Gigi
+    InitFontx(fx24,"/fonts/Gigi24.FNT",""); // 12x24Dot Gigi
+    InitFontx(fx32,"/fonts/Gigi32.FNT",""); // 16x32Dot Gigi
 ```
 
 ![TTF_FONT](https://github.com/user-attachments/assets/7b8c88d8-e347-48a8-b438-1779f2601230)
