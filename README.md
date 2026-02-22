@@ -6,7 +6,8 @@ M5StickC has 80x160 ST7735S tft.
 ![M5StickC-2](https://user-images.githubusercontent.com/6020549/57962798-88284680-7956-11e9-862d-365667c9941d.JPG)
 
 # Software requirements
-esp-idf v4.4/v5.x.   
+ESP-IDF V5.2 or later.   
+Because this project uses the new I2C driver.   
 
 # How to build
 ```
