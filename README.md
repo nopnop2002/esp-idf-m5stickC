@@ -1,6 +1,7 @@
 # esp-idf-m5stickC
 
 Example code for driving M5StickC ST7735S display using ESP-IDF's SPI driver.   
+M5StickC Schematic PDF is [here](https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/schematic/Core/M5StickC/20191118__StickC_A04_3110_Schematic_Rebuild_PinMap.pdf).   
 M5StickC has 80x160 ST7735S tft.   
 
 ![M5StickC-2](https://user-images.githubusercontent.com/6020549/57962798-88284680-7956-11e9-862d-365667c9941d.JPG)
